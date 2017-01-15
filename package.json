@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "A Diff-Match-Patch component for your Angular 2 + applications",
   "scripts": {
-    "watch": "ntsc -w",
     "build": "rm -rf dist && ngc && mv src/*.ngfactory.ts dist/",
     "test": "karma start karma.conf.js"
   },
@@ -46,8 +45,5 @@
 
     "@types/es6-shim": "^0.31.32",
     "@types/jasmine": "^2.2.34"
-  },
-  "dependencies": {
-    "diff-match-patch": "^1.*"
   }
 }

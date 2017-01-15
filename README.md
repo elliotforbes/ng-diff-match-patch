@@ -4,14 +4,15 @@ Ng-Diff-Match-Patch
 This is a port of the angualr-diff-match-patch wrapper for AngularJS.
 
 ## Installation
-------------------
 
 ~~~
 npm install ng-diff-match-patch --save-dev
 ~~~
 
 ## Usage
-----------
+
+to be added...
+
 
 ### Basic Usage
 
@@ -20,7 +21,6 @@ npm install ng-diff-match-patch --save-dev
 ~~~
 
 ## Development
-----------------
 
 **Requirements**
 
