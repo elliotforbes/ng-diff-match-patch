@@ -50,19 +50,34 @@ Currently only ```diff``` works. I will be adding more functionality in the week
 <h1>{{right}}</h1>
 
 <pre diff [left]="left" [right]="right"></pre>
+
+<pre lineDiff [left]="left" [right]="right"></pre>
+
+<pre semanticDiff [left]="left" [right]="right"></pre>
+
+<pre processingDiff [left]="left" [right]="right"></pre>
 ~~~
 
 This should produce something like so:
 
-![ng-diff-match-patch](https://tutorialedge.net/uploads/ngDiffMatchPatch.png)
+![ng-diff-match-patch](https://tutorialedge.net/uploads/ngDiffMatchPatchv2.png)
+
+### CSS Styles:
+
+~~~
+ins{
+  color: black;
+  background: #bbffbb;
+}
+
+del{
+  color: black;
+  background: #ffbbbb;
+}
+~~~
 
 ## Development
 
-**Requirements**
-
-* NodeJS
-* npm
-
 ~~~
-git clone repo here
+git clone https://github.com/elliotforbes/ng-diff-match-patch
 ~~~
