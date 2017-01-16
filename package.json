@@ -1,6 +1,6 @@
 {
   "name": "ng-diff-match-patch",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A Diff-Match-Patch component for your Angular 2 + applications",
   "scripts": {
     "build": "rm -rf dist && ngc && mv src/*.ngfactory.ts dist/",
