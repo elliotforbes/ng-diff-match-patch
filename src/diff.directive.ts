@@ -16,7 +16,7 @@ export class DiffDirective {
 
     this.el.nativeElement.innerHTML = this.createHtml(this.dmp.getDiff(this.left, this.right));
   }
-   
+  
   createHtml (diffs) {
     var html: string;
     html = "<div>"

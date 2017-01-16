@@ -701,111 +701,111 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    */
     diff_cleanupSemantic (diffs) {
-      var changes = false;
-      var equalities = [];  // Stack of indices where equalities are found.
-      var equalitiesLength = 0;  // Keeping our own length var is faster in JS.
-      /** @type {?string} */
-      var lastequality = null;
-      // Always equal to diffs[equalities[equalitiesLength - 1]][1]
-      var pointer = 0;  // Index of current position.
-      // Number of characters that changed prior to the equality.
-      var length_insertions1 = 0;
-      var length_deletions1 = 0;
-      // Number of characters that changed after the equality.
-      var length_insertions2 = 0;
-      var length_deletions2 = 0;
-      while (pointer < diffs.length) {
-        if (diffs[pointer][0] == this.DIFF_EQUAL) {  // Equality found.
-          equalities[equalitiesLength++] = pointer;
-          length_insertions1 = length_insertions2;
-          length_deletions1 = length_deletions2;
+    var changes = false;
+    var equalities = [];  // Stack of indices where equalities are found.
+    var equalitiesLength = 0;  // Keeping our own length var is faster in JS.
+    /** @type {?string} */
+    var lastequality = null;
+    // Always equal to diffs[equalities[equalitiesLength - 1]][1]
+    var pointer = 0;  // Index of current position.
+    // Number of characters that changed prior to the equality.
+    var length_insertions1 = 0;
+    var length_deletions1 = 0;
+    // Number of characters that changed after the equality.
+    var length_insertions2 = 0;
+    var length_deletions2 = 0;
+    while (pointer < diffs.length) {
+      if (diffs[pointer][0] == this.DIFF_EQUAL) {  // Equality found.
+        equalities[equalitiesLength++] = pointer;
+        length_insertions1 = length_insertions2;
+        length_deletions1 = length_deletions2;
+        length_insertions2 = 0;
+        length_deletions2 = 0;
+        lastequality = diffs[pointer][1];
+      } else {  // An insertion or deletion.
+        if (diffs[pointer][0] == this.DIFF_INSERT) {
+          length_insertions2 += diffs[pointer][1].length;
+        } else {
+          length_deletions2 += diffs[pointer][1].length;
+        }
+        // Eliminate an equality that is smaller or equal to the edits on both
+        // sides of it.
+        if (lastequality && (lastequality.length <=
+            Math.max(length_insertions1, length_deletions1)) &&
+            (lastequality.length <= Math.max(length_insertions2,
+                                            length_deletions2))) {
+          // Duplicate record.
+          diffs.splice(equalities[equalitiesLength - 1], 0,
+                      [this.DIFF_DELETE, lastequality]);
+          // Change second copy to insert.
+          diffs[equalities[equalitiesLength - 1] + 1][0] = this.DIFF_INSERT;
+          // Throw away the equality we just deleted.
+          equalitiesLength--;
+          // Throw away the previous equality (it needs to be reevaluated).
+          equalitiesLength--;
+          pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
+          length_insertions1 = 0;  // Reset the counters.
+          length_deletions1 = 0;
           length_insertions2 = 0;
           length_deletions2 = 0;
-          lastequality = diffs[pointer][1];
-        } else {  // An insertion or deletion.
-          if (diffs[pointer][0] == this.DIFF_INSERT) {
-            length_insertions2 += diffs[pointer][1].length;
-          } else {
-            length_deletions2 += diffs[pointer][1].length;
+          lastequality = null;
+          changes = true;
+        }
+      }
+      pointer++;
+    }
+
+    // Normalize the diff.
+    if (changes) {
+      this.diff_cleanupMerge(diffs);
+    }
+    this.diff_cleanupSemanticLossless(diffs);
+
+    // Find any overlaps between deletions and insertions.
+    // e.g: <del>abcxxx</del><ins>xxxdef</ins>
+    //   -> <del>abc</del>xxx<ins>def</ins>
+    // e.g: <del>xxxabc</del><ins>defxxx</ins>
+    //   -> <ins>def</ins>xxx<del>abc</del>
+    // Only extract an overlap if it is as big as the edit ahead or behind it.
+    pointer = 1;
+    while (pointer < diffs.length) {
+      if (diffs[pointer - 1][0] == this.DIFF_DELETE &&
+          diffs[pointer][0] == this.DIFF_INSERT) {
+        var deletion = diffs[pointer - 1][1];
+        var insertion = diffs[pointer][1];
+        var overlap_length1 = this.diff_commonOverlap_(deletion, insertion);
+        var overlap_length2 = this.diff_commonOverlap_(insertion, deletion);
+        if (overlap_length1 >= overlap_length2) {
+          if (overlap_length1 >= deletion.length / 2 ||
+              overlap_length1 >= insertion.length / 2) {
+            // Overlap found.  Insert an equality and trim the surrounding edits.
+            diffs.splice(pointer, 0,
+                [this.DIFF_EQUAL, insertion.substring(0, overlap_length1)]);
+            diffs[pointer - 1][1] =
+                deletion.substring(0, deletion.length - overlap_length1);
+            diffs[pointer + 1][1] = insertion.substring(overlap_length1);
+            pointer++;
           }
-          // Eliminate an equality that is smaller or equal to the edits on both
-          // sides of it.
-          if (lastequality && (lastequality.length <=
-              Math.max(length_insertions1, length_deletions1)) &&
-              (lastequality.length <= Math.max(length_insertions2,
-                                              length_deletions2))) {
-            // Duplicate record.
-            diffs.splice(equalities[equalitiesLength - 1], 0,
-                        [this.DIFF_DELETE, lastequality]);
-            // Change second copy to insert.
-            diffs[equalities[equalitiesLength - 1] + 1][0] = this.DIFF_INSERT;
-            // Throw away the equality we just deleted.
-            equalitiesLength--;
-            // Throw away the previous equality (it needs to be reevaluated).
-            equalitiesLength--;
-            pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
-            length_insertions1 = 0;  // Reset the counters.
-            length_deletions1 = 0;
-            length_insertions2 = 0;
-            length_deletions2 = 0;
-            lastequality = null;
-            changes = true;
+        } else {
+          if (overlap_length2 >= deletion.length / 2 ||
+              overlap_length2 >= insertion.length / 2) {
+            // Reverse overlap found.
+            // Insert an equality and swap and trim the surrounding edits.
+            diffs.splice(pointer, 0,
+                [this.DIFF_EQUAL, deletion.substring(0, overlap_length2)]);
+            diffs[pointer - 1][0] = this.DIFF_INSERT;
+            diffs[pointer - 1][1] =
+                insertion.substring(0, insertion.length - overlap_length2);
+            diffs[pointer + 1][0] = this.DIFF_DELETE;
+            diffs[pointer + 1][1] =
+                deletion.substring(overlap_length2);
+            pointer++;
           }
         }
         pointer++;
       }
-
-      // Normalize the diff.
-      if (changes) {
-        this.diff_cleanupMerge(diffs);
-      }
-      this.diff_cleanupSemanticLossless(diffs);
-
-      // Find any overlaps between deletions and insertions.
-      // e.g: <del>abcxxx</del><ins>xxxdef</ins>
-      //   -> <del>abc</del>xxx<ins>def</ins>
-      // e.g: <del>xxxabc</del><ins>defxxx</ins>
-      //   -> <ins>def</ins>xxx<del>abc</del>
-      // Only extract an overlap if it is as big as the edit ahead or behind it.
-      pointer = 1;
-      while (pointer < diffs.length) {
-        if (diffs[pointer - 1][0] == this.DIFF_DELETE &&
-            diffs[pointer][0] == this.DIFF_INSERT) {
-          var deletion = diffs[pointer - 1][1];
-          var insertion = diffs[pointer][1];
-          var overlap_length1 = this.diff_commonOverlap_(deletion, insertion);
-          var overlap_length2 = this.diff_commonOverlap_(insertion, deletion);
-          if (overlap_length1 >= overlap_length2) {
-            if (overlap_length1 >= deletion.length / 2 ||
-                overlap_length1 >= insertion.length / 2) {
-              // Overlap found.  Insert an equality and trim the surrounding edits.
-              diffs.splice(pointer, 0,
-                  [this.DIFF_EQUAL, insertion.substring(0, overlap_length1)]);
-              diffs[pointer - 1][1] =
-                  deletion.substring(0, deletion.length - overlap_length1);
-              diffs[pointer + 1][1] = insertion.substring(overlap_length1);
-              pointer++;
-            }
-          } else {
-            if (overlap_length2 >= deletion.length / 2 ||
-                overlap_length2 >= insertion.length / 2) {
-              // Reverse overlap found.
-              // Insert an equality and swap and trim the surrounding edits.
-              diffs.splice(pointer, 0,
-                  [this.DIFF_EQUAL, deletion.substring(0, overlap_length2)]);
-              diffs[pointer - 1][0] = this.DIFF_INSERT;
-              diffs[pointer - 1][1] =
-                  insertion.substring(0, insertion.length - overlap_length2);
-              diffs[pointer + 1][0] = this.DIFF_DELETE;
-              diffs[pointer + 1][1] =
-                  deletion.substring(overlap_length2);
-              pointer++;
-            }
-          }
-          pointer++;
-        }
-        pointer++;
-     }
+      pointer++;
+    }
   };
 
 
