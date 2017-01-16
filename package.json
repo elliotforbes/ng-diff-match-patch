@@ -1,26 +1,51 @@
 {
-  "name": "ng-diff-match-patch",
-  "version": "0.0.2",
-  "description": "A Diff-Match-Patch component for your Angular 2 + applications",
-  "scripts": {
-    "build": "rm -rf dist && ngc && mv src/*.ngfactory.ts dist/",
-    "test": "karma start karma.conf.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/elliotforbes/ng-diff-match-patch"
-  },
-  "keywords": [
-    "Angular2",
-    "ng2",
-    "diff-match-patch"
+  "_args": [
+    [
+      "https://github.com/elliotforbes/ng-diff-match-patch.git",
+      "/Users/elliotforbes/Projects/Angular/testbed/testProject"
+    ]
   ],
-  "author": "Elliot Forbes",
-  "license": "MIT",
+  "_from": "git+https://github.com/elliotforbes/ng-diff-match-patch.git",
+  "_id": "ng-diff-match-patch@0.0.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/ng-diff-match-patch",
+  "_phantomChildren": {},
+  "_requested": {
+    "hosted": {
+      "directUrl": "https://raw.githubusercontent.com/elliotforbes/ng-diff-match-patch/master/package.json",
+      "gitUrl": "git://github.com/elliotforbes/ng-diff-match-patch.git",
+      "httpsUrl": "git+https://github.com/elliotforbes/ng-diff-match-patch.git",
+      "shortcut": "github:elliotforbes/ng-diff-match-patch",
+      "ssh": "git@github.com:elliotforbes/ng-diff-match-patch.git",
+      "sshUrl": "git+ssh://git@github.com/elliotforbes/ng-diff-match-patch.git",
+      "type": "github"
+    },
+    "name": null,
+    "raw": "https://github.com/elliotforbes/ng-diff-match-patch.git",
+    "rawSpec": "https://github.com/elliotforbes/ng-diff-match-patch.git",
+    "scope": null,
+    "spec": "git+https://github.com/elliotforbes/ng-diff-match-patch.git",
+    "type": "hosted"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "git+https://github.com/elliotforbes/ng-diff-match-patch.git#7f102ded0dffd9128bb456b59349e540ffb9435a",
+  "_shasum": "09898c1b679a5b27de610916532af6105f17b6c5",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/elliotforbes/ng-diff-match-patch.git",
+  "_where": "/Users/elliotforbes/Projects/Angular/testbed/testProject",
+  "author": {
+    "name": "Elliot Forbes"
+  },
   "bugs": {
     "url": "https://github.com/elliotforbes/ng-diff-match-patch/issues"
   },
-  "homepage": "https://github.com/elliotforbes/ng-diff-match-patch#readme",
+  "dependencies": {
+    "diff-match-patch": "^1.*"
+  },
+  "description": "A Diff-Match-Patch component for your Angular 2 + applications",
   "devDependencies": {
     "@angular/common": "^2.1.1",
     "@angular/compiler": "^2.1.1",
@@ -30,7 +55,8 @@
     "@angular/platform-browser": "^2.1.1",
     "@angular/platform-browser-dynamic": "^2.1.1",
     "@angular/platform-server": "^2.1.1",
-
+    "@types/es6-shim": "^0.31.32",
+    "@types/jasmine": "^2.2.34",
     "core-js": "^2.4.1",
     "http-server": "^0.9.0",
     "jasmine-core": "~2.5.2",
@@ -41,9 +67,28 @@
     "rxjs": "5.0.0-beta.12",
     "systemjs": "0.19.39",
     "typescript": "^2.0.3",
-    "zone.js": "^0.6.25",
-
-    "@types/es6-shim": "^0.31.32",
-    "@types/jasmine": "^2.2.34"
-  }
+    "zone.js": "^0.6.25"
+  },
+  "gitHead": "7f102ded0dffd9128bb456b59349e540ffb9435a",
+  "homepage": "https://github.com/elliotforbes/ng-diff-match-patch#readme",
+  "keywords": [
+    "Angular2",
+    "ng2",
+    "diff-match-patch"
+  ],
+  "license": "MIT",
+  "name": "ng-diff-match-patch",
+  "optionalDependencies": {},
+  "readme": "Ng-Diff-Match-Patch\n=====================\n\nThis is a port of the angualr-diff-match-patch wrapper for AngularJS.\n\n## Installation\n------------------\n\n~~~\nnpm install ng-diff-match-patch --save-dev\n~~~\n\n## Usage\n----------\n\n### Basic Usage\n\n~~~\n<pre line-diff></pre>\n~~~\n\n## Development\n----------------\n\n**Requirements**\n\n* NodeJS\n* npm\n\n~~~\ngit clone repo here\n~~~",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elliotforbes/ng-diff-match-patch.git"
+  },
+  "scripts": {
+    "build": "rm -rf dist && ngc && mv src/*.ngfactory.ts dist/",
+    "test": "karma start karma.conf.js",
+    "watch": "ntsc -w"
+  },
+  "version": "0.0.1"
 }

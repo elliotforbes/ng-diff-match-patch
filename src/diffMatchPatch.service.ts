@@ -14,12 +14,16 @@ export class DiffMatchPatchService {
      return this.dmp.diff_main(left, right);
   }
 
-  cleanupSemantic(intraDiffs: any) {
-    return this.dmp.diff_cleanupSemantic(intraDiffs);
+  getSemanticDiff(left: string, right: string) {
+    var diffs = this.dmp.diff_main(left, right);
+    // this.dmp.diff_cleanupSemantic(diffs);
+    return diffs;
   }
 
-  getPrettyHtml(diffs: any) {
-    return this.dmp.diff_prettyHtml(diffs);
+  getProcessingDiff(left: string, right: string) {
+    var diffs = this.dmp.diff_main(left, right);
+    // this.dmp.diff_cleanupEfficiency(diffs);
+    return diffs;
   }
 
   getDmp() {
