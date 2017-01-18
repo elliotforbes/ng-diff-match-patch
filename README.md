@@ -60,6 +60,7 @@ This should produce something like so:
 
 ![ng-diff-match-patch](https://tutorialedge.net/uploads/ngDiffMatchPatchv2.png)
 
+
 ### CSS Styles:
 
 ~~~
