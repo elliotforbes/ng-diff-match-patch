@@ -1,7 +1,7 @@
 Ng-Diff-Match-Patch
 =====================
 
-This is a port of the angular-diff-match-patch wrapper for AngularJS.
+This is a port of the [angular-diff-match-patch](https://github.com/amweiss/angular-diff-match-patch) wrapper for AngularJS. 
 
 ## Installation
 
@@ -42,8 +42,6 @@ Remember to add ```DiffMatchPatchModule``` to your imports array in @NgModule
 
 ### Basic Usage
 
-Currently only ```diff``` works. I will be adding more functionality in the weeks to come.
-
 ~~~
 <h1>{{left}}</h1>
 
@@ -76,8 +74,6 @@ del{
 }
 ~~~
 
-## Development
+## Pull Requests
 
-~~~
-git clone https://github.com/elliotforbes/ng-diff-match-patch
-~~~
+Got any improvements you'd like to make to this module? Submit a pull request and I will review and merge.
