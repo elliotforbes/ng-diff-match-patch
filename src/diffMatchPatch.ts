@@ -36,11 +36,10 @@ class DiffMatchPatch {
    */
 
   // Define some regex patterns for matching boundaries.
-  nonAlphaNumericRegex_ = /[^a-zA-Z0-9]/;
-  whitespaceRegex_ = /\s/;
-  linebreakRegex_ = /[\r\n]/;
-  blanklineEndRegex_ = /\n\r?\n$/;
-  blanklineStartRegex_ = /^\r?\n\r?\n/;
+  whitespaceRegex_ = new RegExp('/\s/');
+  linebreakRegex_ = new RegExp('/[\r\n]/');
+  blanklineEndRegex_ = new RegExp('/\n\r?\n$/');
+  blanklineStartRegex_ = new RegExp('/^\r?\n\r?\n/');
 
   DIFF_DELETE : number = -1;
   DIFF_INSERT : number = 1;
@@ -832,6 +831,9 @@ class DiffMatchPatch {
         return 6;
       }
 
+
+      var nonAlphaNumericRegex_ = new RegExp('/[^a-zA-Z0-9]/');
+
       // Each port of this function behaves slightly differently due to
       // subtle differences in each language's definition of things like
       // 'whitespace'.  Since this function's purpose is largely cosmetic,
@@ -839,8 +841,8 @@ class DiffMatchPatch {
       // rather than force total conformity.
       var char1 = one.charAt(one.length - 1);
       var char2 = two.charAt(0);
-      var nonAlphaNumeric1 = char1.match(this.nonAlphaNumericRegex_);
-      var nonAlphaNumeric2 = char2.match(this.nonAlphaNumericRegex_);
+      var nonAlphaNumeric1 = char1.match(nonAlphaNumericRegex_);
+      var nonAlphaNumeric2 = char2.match(nonAlphaNumericRegex_);
       var whitespace1 = nonAlphaNumeric1 &&
           char1.match(this.whitespaceRegex_);
       var whitespace2 = nonAlphaNumeric2 &&

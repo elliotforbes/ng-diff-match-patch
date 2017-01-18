@@ -11,7 +11,7 @@ export class ProcessingDiffDirective {
   constructor(private el: ElementRef, private dmp: DiffMatchPatchService) {  }
 
   ngOnInit () {
-    this.el.nativeElement.innerHTML = this.createHtml(this.dmp.getDiff(this.left, this.right));
+    this.el.nativeElement.innerHTML = this.createHtml(this.dmp.getProcessingDiff(this.left, this.right));
   }
 
   // TODO: Need to fix this for line diffs
