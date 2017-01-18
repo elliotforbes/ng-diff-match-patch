@@ -58,7 +58,7 @@ Remember to add ```DiffMatchPatchModule``` to your imports array in @NgModule
 
 This should produce something like so:
 
-![ng-diff-match-patch](https://tutorialedge.net/uploads/ngDiffMatchPatchv2.png)
+![ng-diff-match-patch](https://tutorialedge.net/uploads/ngDiffMatchPatchv3.png)
 
 
 ### CSS Styles:
