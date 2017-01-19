@@ -3,7 +3,6 @@ import { DiffMatchPatchService } from './diffMatchPatch.service';
 
 @Directive({
   selector: '[lineDiff]',
-
 })
 export class LineDiffDirective {
   @Input() left: string;
@@ -24,10 +23,10 @@ export class LineDiffDirective {
         html += diff[1];
       }
       if(diff[0] == -1) {
-        html += "<del> - " + diff[1] + "</del>\n";
+        html += "<div class=\"del\"> - <del>" + diff[1] + "</del></div>\n";
       }
       if(diff[0] == 1) {
-        html += "<ins> + " + diff[1] + "</ins>\n";
+        html += "<div class=\"ins\"> + <ins>" + diff[1] + "</ins></div>\n";
       }
     }
     html += "</div>"
