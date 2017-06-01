@@ -1,5 +1,6 @@
 import { Directive, ElementRef, Input } from '@angular/core';
 import { DiffMatchPatchService } from './diffMatchPatch.service';
+import { Diff } from './diffMatchPatch';
 
 @Directive({
   selector: '[semanticDiff]'
@@ -15,9 +16,9 @@ export class SemanticDiffDirective {
   }
 
   // TODO: Need to fix this for line diffs
-  createHtml (diffs) {
-    var html: string;
-    html = "<div>"
+  createHtml (diffs: Array<Diff>) {
+    let html: string;
+    html = '<div>';
     for(let diff of diffs) {
       diff[1] = diff[1].replace(/\n/g, '<br/>');
 
@@ -25,14 +26,13 @@ export class SemanticDiffDirective {
         html += diff[1];
       }
       if(diff[0] == -1) {
-        html += "<del>" + diff[1] + "</del>";
+        html += '<del>' + diff[1] + '</del>';
       }
       if(diff[0] == 1) {
-        html += "<ins>" + diff[1] + "</ins>";
+        html += '<ins>' + diff[1] + '</ins>';
       }
     }
-    html += "</div>"
+    html += '</div>';
     return html;
   }
-
 }

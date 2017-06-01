@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "sourceMap": true
+  }
+}
