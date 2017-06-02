@@ -5,12 +5,14 @@ import { DiffMatchPatchService } from './diffMatchPatch.service';
   selector: '[semanticDiff]'
 })
 export class SemanticDiffDirective { 
-  @Input() left: string;
-  @Input() right: string;
+  @Input() left: string | number | boolean;
+  @Input() right: string | number | boolean;
 
   constructor(private el: ElementRef, private dmp: DiffMatchPatchService) {  }
 
   ngOnInit () {
+    if(typeof this.left === 'number' || typeof this.left === 'boolean') this.left = this.left.toString();
+    if(typeof this.right === 'number' || typeof this.right === 'boolean') this.right = this.right.toString();
     this.el.nativeElement.innerHTML = this.createHtml(this.dmp.getSemanticDiff(this.left, this.right));
   }
 
