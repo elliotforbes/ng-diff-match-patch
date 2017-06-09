@@ -2094,7 +2094,7 @@ class DiffMatchPatch {
  * Class representing one patch operation.
  * @constructor
  */
-class patch_obj {
+export class patch_obj {
 
   constructor() {  }
 
