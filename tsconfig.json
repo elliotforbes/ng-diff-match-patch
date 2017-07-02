@@ -8,7 +8,8 @@
     "declaration": true,
     "outDir": "./dist",
     "noImplicitAny": true,
-    "lib": ["es2015", "dom"]
+    "lib": ["es2015", "dom"],
+    "noStrictGenericChecks": true
   },
   "files": [
     "./src/diffMatchPatch.module.ts"
