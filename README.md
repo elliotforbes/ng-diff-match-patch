@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 // import our necessary module and components here 
-import { DiffMatchPatchModule, DiffDirective } from 'ng-diff-match-patch';
+import { DiffMatchPatchModule } from 'ng-diff-match-patch';
 
 @NgModule({
   declarations: [
