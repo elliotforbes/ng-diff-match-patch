@@ -1,3 +1,5 @@
+export type Diff = [number, string];
+
 /**
  * Class containing the diff, match and patch methods.
  * @constructor
@@ -59,7 +61,7 @@ class DiffMatchPatch {
    *     instead.
    * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
    */
-    diff_main (text1, text2, opt_checklines?, opt_deadline?) {
+    diff_main (text1: string, text2: string, opt_checklines?: boolean, opt_deadline?: number): Array<Diff> {
       // Set a deadline by which time the diff must be complete.
       if (typeof opt_deadline == 'undefined') {
         if (this.Diff_Timeout <= 0) {
@@ -68,7 +70,7 @@ class DiffMatchPatch {
           opt_deadline = (new Date).getTime() + this.Diff_Timeout * 1000;
         }
       }
-      var deadline = opt_deadline;
+      const deadline = opt_deadline;
 
       // Check for null inputs.
       if (text1 == null || text2 == null) {
@@ -86,22 +88,22 @@ class DiffMatchPatch {
       if (typeof opt_checklines == 'undefined') {
         opt_checklines = true;
       }
-      var checklines = opt_checklines;
+      const checklines = opt_checklines;
 
       // Trim off common prefix (speedup).
-      var commonlength = this.diff_commonPrefix(text1, text2);
-      var commonprefix = text1.substring(0, commonlength);
+      let commonlength = this.diff_commonPrefix(text1, text2);
+      const commonprefix = text1.substring(0, commonlength);
       text1 = text1.substring(commonlength);
       text2 = text2.substring(commonlength);
 
       // Trim off common suffix (speedup).
       commonlength = this.diff_commonSuffix(text1, text2);
-      var commonsuffix = text1.substring(text1.length - commonlength);
+      const commonsuffix = text1.substring(text1.length - commonlength);
       text1 = text1.substring(0, text1.length - commonlength);
       text2 = text2.substring(0, text2.length - commonlength);
 
       // Compute the diff on the middle block.
-      var diffs = this.diff_compute_(text1, text2, checklines, deadline);
+      const diffs = this.diff_compute_(text1, text2, checklines, deadline);
 
       // Restore the prefix and suffix.
       if (commonprefix) {
@@ -127,9 +129,9 @@ class DiffMatchPatch {
    * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
    * @private
    */
-    diff_compute_ (text1, text2, checklines,
-      deadline) {
-    var diffs;
+    diff_compute_ (text1: string, text2: string, checklines: boolean,
+      deadline: number): Array<Diff> {
+    let diffs: Array<Diff>;
 
     if (!text1) {
       // Just add some text (speedup).
@@ -141,9 +143,9 @@ class DiffMatchPatch {
       return [[this.DIFF_DELETE, text1]];
     }
 
-    var longtext = text1.length > text2.length ? text1 : text2;
-    var shorttext = text1.length > text2.length ? text2 : text1;
-    var i = longtext.indexOf(shorttext);
+    const longtext = text1.length > text2.length ? text1 : text2;
+    const shorttext = text1.length > text2.length ? text2 : text1;
+    const i = longtext.indexOf(shorttext);
     if (i != -1) {
       // Shorter text is inside the longer text (speedup).
       diffs = [[this.DIFF_INSERT, longtext.substring(0, i)],
@@ -163,17 +165,17 @@ class DiffMatchPatch {
     }
 
     // Check to see if the problem can be split in two.
-    var hm = this.diff_halfMatch_(text1, text2);
+    const hm = this.diff_halfMatch_(text1, text2);
     if (hm) {
       // A half-match was found, sort out the return data.
-      var text1_a = hm[0];
-      var text1_b = hm[1];
-      var text2_a = hm[2];
-      var text2_b = hm[3];
-      var mid_common = hm[4];
+      const text1_a = hm[0];
+      const text1_b = hm[1];
+      const text2_a = hm[2];
+      const text2_b = hm[3];
+      const mid_common = hm[4];
       // Send both pairs off for separate processing.
-      var diffs_a = this.diff_main(text1_a, text2_a, checklines, deadline);
-      var diffs_b = this.diff_main(text1_b, text2_b, checklines, deadline);
+      const diffs_a = this.diff_main(text1_a, text2_a, checklines, deadline);
+      const diffs_b = this.diff_main(text1_b, text2_b, checklines, deadline);
       // Merge the results.
       return diffs_a.concat([[this.DIFF_EQUAL, mid_common]], diffs_b);
     }
@@ -196,14 +198,14 @@ class DiffMatchPatch {
    * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
    * @private
    */
-    diff_lineMode_ (text1, text2, deadline) {
+    diff_lineMode_ (text1: string, text2: string, deadline: number) {
     // Scan the text on a line-by-line basis first.
-    var a = this.diff_linesToChars_(text1, text2);
+    const a = this.diff_linesToChars_(text1, text2);
     text1 = a.chars1;
     text2 = a.chars2;
-    var linearray = a.lineArray;
+    const linearray = a.lineArray;
 
-    var diffs = this.diff_main(text1, text2, false, deadline);
+    const diffs = this.diff_main(text1, text2, false, deadline);
 
     // Convert the diff back to original text.
     this.diff_charsToLines_(diffs, linearray);
@@ -213,11 +215,11 @@ class DiffMatchPatch {
     // Rediff any replacement blocks, this time character-by-character.
     // Add a dummy entry at the end.
     diffs.push([this.DIFF_EQUAL, '']);
-    var pointer = 0;
-    var count_delete = 0;
-    var count_insert = 0;
-    var text_delete = '';
-    var text_insert = '';
+    let pointer = 0;
+    let count_delete = 0;
+    let count_insert = 0;
+    let text_delete = '';
+    let text_insert = '';
     while (pointer < diffs.length) {
       switch (diffs[pointer][0]) {
         case this.DIFF_INSERT:
@@ -235,8 +237,8 @@ class DiffMatchPatch {
             diffs.splice(pointer - count_delete - count_insert,
                         count_delete + count_insert);
             pointer = pointer - count_delete - count_insert;
-            var b = this.diff_main(text_delete, text_insert, false, deadline);
-            for (var j = b.length - 1; j >= 0; j--) {
+            const b = this.diff_main(text_delete, text_insert, false, deadline);
+            for (let j = b.length - 1; j >= 0; j--) {
               diffs.splice(pointer, 0, b[j]);
             }
             pointer = pointer + b.length;
@@ -258,56 +260,56 @@ class DiffMatchPatch {
   /**
    * Find the 'middle snake' of a diff, split the problem in two
    * and return the recursively constructed diff.
-   * See Myers 1986 paper: An O(ND) Difference Algorithm and Its Variations.
+   * See Myers 1986 paper: An O(ND) Difference Algorithm and Its constiations.
    * @param {string} text1 Old string to be diffed.
    * @param {string} text2 New string to be diffed.
    * @param {number} deadline Time at which to bail if not yet complete.
    * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
    * @private
    */
-    diff_bisect_ (text1, text2, deadline) {
+    diff_bisect_ (text1: string, text2: string, deadline: number): Array<Diff> {
     // Cache the text lengths to prevent multiple calls.
-    var text1_length = text1.length;
-    var text2_length = text2.length;
-    var max_d = Math.ceil((text1_length + text2_length) / 2);
-    var v_offset = max_d;
-    var v_length = 2 * max_d;
-    var v1 = new Array(v_length);
-    var v2 = new Array(v_length);
+    const text1_length = text1.length;
+    const text2_length = text2.length;
+    const max_d = Math.ceil((text1_length + text2_length) / 2);
+    const v_offset = max_d;
+    const v_length = 2 * max_d;
+    const v1 = new Array(v_length);
+    const v2 = new Array(v_length);
     // Setting all elements to -1 is faster in Chrome & Firefox than mixing
     // integers and undefined.
-    for (var x = 0; x < v_length; x++) {
+    for (let x = 0; x < v_length; x++) {
       v1[x] = -1;
       v2[x] = -1;
     }
     v1[v_offset + 1] = 0;
     v2[v_offset + 1] = 0;
-    var delta = text1_length - text2_length;
+    const delta = text1_length - text2_length;
     // If the total number of characters is odd, then the front path will collide
     // with the reverse path.
-    var front = (delta % 2 != 0);
+    const front = (delta % 2 != 0);
     // Offsets for start and end of k loop.
     // Prevents mapping of space beyond the grid.
-    var k1start = 0;
-    var k1end = 0;
-    var k2start = 0;
-    var k2end = 0;
-    for (var d = 0; d < max_d; d++) {
+    let k1start = 0;
+    let k1end = 0;
+    let k2start = 0;
+    let k2end = 0;
+    for (let d = 0; d < max_d; d++) {
       // Bail out if deadline is reached.
       if ((new Date()).getTime() > deadline) {
         break;
       }
 
       // Walk the front path one step.
-      for (var k1 = -d + k1start; k1 <= d - k1end; k1 += 2) {
-        var k1_offset = v_offset + k1;
-        var x1;
+      for (let k1 = -d + k1start; k1 <= d - k1end; k1 += 2) {
+        const k1_offset = v_offset + k1;
+        let x1;
         if (k1 == -d || (k1 != d && v1[k1_offset - 1] < v1[k1_offset + 1])) {
           x1 = v1[k1_offset + 1];
         } else {
           x1 = v1[k1_offset - 1] + 1;
         }
-        var y1 = x1 - k1;
+        let y1 = x1 - k1;
         while (x1 < text1_length && y1 < text2_length &&
               text1.charAt(x1) == text2.charAt(y1)) {
           x1++;
@@ -321,10 +323,10 @@ class DiffMatchPatch {
           // Ran off the bottom of the graph.
           k1start += 2;
         } else if (front) {
-          var k2_offset = v_offset + delta - k1;
+          const k2_offset = v_offset + delta - k1;
           if (k2_offset >= 0 && k2_offset < v_length && v2[k2_offset] != -1) {
             // Mirror x2 onto top-left coordinate system.
-            var x2 = text1_length - v2[k2_offset];
+            const x2 = text1_length - v2[k2_offset];
             if (x1 >= x2) {
               // Overlap detected.
               return this.diff_bisectSplit_(text1, text2, x1, y1, deadline);
@@ -334,15 +336,15 @@ class DiffMatchPatch {
       }
 
       // Walk the reverse path one step.
-      for (var k2 = -d + k2start; k2 <= d - k2end; k2 += 2) {
-        var k2_offset = v_offset + k2;
-        var x2: number;
+      for (let k2 = -d + k2start; k2 <= d - k2end; k2 += 2) {
+        const k2_offset = v_offset + k2;
+        let x2: number;
         if (k2 == -d || (k2 != d && v2[k2_offset - 1] < v2[k2_offset + 1])) {
           x2 = v2[k2_offset + 1];
         } else {
           x2 = v2[k2_offset - 1] + 1;
         }
-        var y2 = x2 - k2;
+        let y2 = x2 - k2;
         while (x2 < text1_length && y2 < text2_length &&
               text1.charAt(text1_length - x2 - 1) ==
               text2.charAt(text2_length - y2 - 1)) {
@@ -357,10 +359,10 @@ class DiffMatchPatch {
           // Ran off the top of the graph.
           k2start += 2;
         } else if (!front) {
-          var k1_offset = v_offset + delta - k2;
+          const k1_offset = v_offset + delta - k2;
           if (k1_offset >= 0 && k1_offset < v_length && v1[k1_offset] != -1) {
-            var x1 = v1[k1_offset];
-            var y1 = v_offset + x1 - k1_offset;
+            const x1 = v1[k1_offset];
+            const y1 = v_offset + x1 - k1_offset;
             // Mirror x2 onto top-left coordinate system.
             x2 = text1_length - x2;
             if (x1 >= x2) {
@@ -388,15 +390,15 @@ class DiffMatchPatch {
    * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
    * @private
    */
-    diff_bisectSplit_ (text1, text2, x, y, deadline) {
-      var text1a = text1.substring(0, x);
-      var text2a = text2.substring(0, y);
-      var text1b = text1.substring(x);
-      var text2b = text2.substring(y);
+    diff_bisectSplit_ (text1: string, text2: string, x: number, y: number, deadline: number) {
+      const text1a = text1.substring(0, x);
+      const text2a = text2.substring(0, y);
+      const text1b = text1.substring(x);
+      const text2b = text2.substring(y);
 
       // Compute both diffs serially.
-      var diffs = this.diff_main(text1a, text2a, false, deadline);
-      var diffsb = this.diff_main(text1b, text2b, false, deadline);
+      const diffs = this.diff_main(text1a, text2a, false, deadline);
+      const diffsb = this.diff_main(text1b, text2b, false, deadline);
 
       return diffs.concat(diffsb);
     };
@@ -413,17 +415,17 @@ class DiffMatchPatch {
    *     The zeroth element of the array of unique strings is intentionally blank.
    * @private
    */
-    diff_linesToChars_ (text1, text2) {
-      var lineArray = [];  // e.g. lineArray[4] == 'Hello\n'
-      var lineHash = {};   // e.g. lineHash['Hello\n'] == 4
+    diff_linesToChars_ (text1: string, text2: string) {
+      const lineArray = [];  // e.g. lineArray[4] == 'Hello\n'
+      const lineHash = {};   // e.g. lineHash['Hello\n'] == 4
 
-      // '\x00' is a valid character, but various debuggers don't like it.
+      // '\x00' is a valid character, but constious debuggers don't like it.
       // So we'll insert a junk entry to avoid generating a null character.
       lineArray[0] = '';
 
 
-      var chars1 = this.diff_linesToCharsMunge_(text1, lineArray, lineHash);
-      var chars2 = this.diff_linesToCharsMunge_(text2, lineArray, lineHash);
+      const chars1 = this.diff_linesToCharsMunge_(text1, lineArray, lineHash);
+      const chars2 = this.diff_linesToCharsMunge_(text2, lineArray, lineHash);
       return {chars1: chars1, chars2: chars2, lineArray: lineArray};
    };
 
@@ -435,21 +437,21 @@ class DiffMatchPatch {
    * @return {string} Encoded string.
    * @private
    */
-  diff_linesToCharsMunge_(text, lineArray, lineHash) {
-    var chars = '';
+  diff_linesToCharsMunge_(text: string, lineArray: Array<string>, lineHash: any): string {
+    let chars = '';
     // Walk the text, pulling out a substring for each line.
     // text.split('\n') would would temporarily double our memory footprint.
     // Modifying text would create many large strings to garbage collect.
-    var lineStart = 0;
-    var lineEnd = -1;
-    // Keeping our own length variable is faster than looking it up.
-    var lineArrayLength = lineArray.length;
+    let lineStart = 0;
+    let lineEnd = -1;
+    // Keeping our own length constiable is faster than looking it up.
+    let lineArrayLength = lineArray.length;
     while (lineEnd < text.length - 1) {
       lineEnd = text.indexOf('\n', lineStart);
       if (lineEnd == -1) {
         lineEnd = text.length - 1;
       }
-      var line = text.substring(lineStart, lineEnd + 1);
+      const line = text.substring(lineStart, lineEnd + 1);
       lineStart = lineEnd + 1;
 
       if (lineHash.hasOwnProperty ? lineHash.hasOwnProperty(line) :
@@ -471,11 +473,11 @@ class DiffMatchPatch {
    * @param {!Array.<string>} lineArray Array of unique strings.
    * @private
    */
-    diff_charsToLines_ (diffs, lineArray) {
-    for (var x = 0; x < diffs.length; x++) {
-      var chars = diffs[x][1];
-      var text = [];
-      for (var y = 0; y < chars.length; y++) {
+    diff_charsToLines_ (diffs: Array<Diff>, lineArray: Array<string>): void {
+    for (let x = 0; x < diffs.length; x++) {
+      const chars = diffs[x][1];
+      const text = [];
+      for (let y = 0; y < chars.length; y++) {
         text[y] = lineArray[chars.charCodeAt(y)];
       }
       diffs[x][1] = text.join('');
@@ -490,17 +492,17 @@ class DiffMatchPatch {
    * @return {number} The number of characters common to the start of each
    *     string.
    */
-    diff_commonPrefix (text1, text2) {
+    diff_commonPrefix (text1: string, text2: string): number {
     // Quick check for common null cases.
     if (!text1 || !text2 || text1.charAt(0) != text2.charAt(0)) {
       return 0;
     }
     // Binary search.
     // Performance analysis: http://neil.fraser.name/news/2007/10/09/
-    var pointermin = 0;
-    var pointermax = Math.min(text1.length, text2.length);
-    var pointermid = pointermax;
-    var pointerstart = 0;
+    let pointermin = 0;
+    let pointermax = Math.min(text1.length, text2.length);
+    let pointermid = pointermax;
+    let pointerstart = 0;
     while (pointermin < pointermid) {
       if (text1.substring(pointerstart, pointermid) ==
           text2.substring(pointerstart, pointermid)) {
@@ -521,7 +523,7 @@ class DiffMatchPatch {
    * @param {string} text2 Second string.
    * @return {number} The number of characters common to the end of each string.
    */
-    diff_commonSuffix (text1, text2) {
+    diff_commonSuffix (text1: string, text2: string): number {
     // Quick check for common null cases.
     if (!text1 || !text2 ||
         text1.charAt(text1.length - 1) != text2.charAt(text2.length - 1)) {
@@ -529,10 +531,10 @@ class DiffMatchPatch {
     }
     // Binary search.
     // Performance analysis: http://neil.fraser.name/news/2007/10/09/
-    var pointermin = 0;
-    var pointermax = Math.min(text1.length, text2.length);
-    var pointermid = pointermax;
-    var pointerend = 0;
+    let pointermin = 0;
+    let pointermax = Math.min(text1.length, text2.length);
+    let pointermid = pointermax;
+    let pointerend = 0;
     while (pointermin < pointermid) {
       if (text1.substring(text1.length - pointermid, text1.length - pointerend) ==
           text2.substring(text2.length - pointermid, text2.length - pointerend)) {
@@ -555,10 +557,10 @@ class DiffMatchPatch {
    *     string and the start of the second string.
    * @private
    */
-    diff_commonOverlap_ (text1, text2) {
+    diff_commonOverlap_ (text1: string, text2: string): number {
     // Cache the text lengths to prevent multiple calls.
-    var text1_length = text1.length;
-    var text2_length = text2.length;
+    const text1_length = text1.length;
+    const text2_length = text2.length;
     // Eliminate the null case.
     if (text1_length == 0 || text2_length == 0) {
       return 0;
@@ -569,7 +571,7 @@ class DiffMatchPatch {
     } else if (text1_length < text2_length) {
       text2 = text2.substring(0, text1_length);
     }
-    var text_length = Math.min(text1_length, text2_length);
+    const text_length = Math.min(text1_length, text2_length);
     // Quick check for the worst case.
     if (text1 == text2) {
       return text_length;
@@ -578,11 +580,11 @@ class DiffMatchPatch {
     // Start by looking for a single character match
     // and increase length until no match is found.
     // Performance analysis: http://neil.fraser.name/news/2010/11/04/
-    var best = 0;
-    var length = 1;
+    let best = 0;
+    let length = 1;
     while (true) {
-      var pattern = text1.substring(text_length - length);
-      var found = text2.indexOf(pattern);
+      const pattern = text1.substring(text_length - length);
+      const found = text2.indexOf(pattern);
       if (found == -1) {
         return best;
       }
@@ -607,26 +609,26 @@ class DiffMatchPatch {
    *     text2 and the common middle.  Or null if there was no match.
    * @private
    */
-    diff_halfMatch_ (text1, text2) {
+    diff_halfMatch_ (text1: string, text2: string) {
     if (this.Diff_Timeout <= 0) {
       // Don't risk returning a non-optimal diff if we have unlimited time.
       return null;
     }
-    var longtext = text1.length > text2.length ? text1 : text2;
-    var shorttext = text1.length > text2.length ? text2 : text1;
+    const longtext = text1.length > text2.length ? text1 : text2;
+    const shorttext = text1.length > text2.length ? text2 : text1;
     if (longtext.length < 4 || shorttext.length * 2 < longtext.length) {
       return null;  // Pointless.
     }
-    var dmp = this;  // 'this' becomes 'window' in a closure.
+    const dmp = this;  // 'this' becomes 'window' in a closure.
 
 
     // First check if the second quarter is the seed for a half-match.
-    var hm1 = this.diff_halfMatchI_(longtext, shorttext,
+    const hm1 = this.diff_halfMatchI_(longtext, shorttext,
                               Math.ceil(longtext.length / 4), dmp);
     // Check again based on the third quarter.
-    var hm2 = this.diff_halfMatchI_(longtext, shorttext,
+    const hm2 = this.diff_halfMatchI_(longtext, shorttext,
                               Math.ceil(longtext.length / 2), dmp);
-    var hm;
+    let hm;
     if (!hm1 && !hm2) {
       return null;
     } else if (!hm2) {
@@ -639,7 +641,7 @@ class DiffMatchPatch {
     }
 
     // A half-match was found, sort out the return data.
-    var text1_a, text1_b, text2_a, text2_b;
+    let text1_a, text1_b, text2_a, text2_b;
     if (text1.length > text2.length) {
       text1_a = hm[0];
       text1_b = hm[1];
@@ -651,14 +653,14 @@ class DiffMatchPatch {
       text1_a = hm[2];
       text1_b = hm[3];
     }
-    var mid_common = hm[4];
+    const mid_common = hm[4];
     return [text1_a, text1_b, text2_a, text2_b, mid_common];
   };
 
   /**
    * Does a substring of shorttext exist within longtext such that the substring
    * is at least half the length of longtext?
-   * Closure, but does not reference any external variables.
+   * Closure, but does not reference any external constiables.
    * @param {string} longtext Longer string.
    * @param {string} shorttext Shorter string.
    * @param {number} i Start index of quarter length substring within longtext.
@@ -667,16 +669,16 @@ class DiffMatchPatch {
    *     of shorttext and the common middle.  Or null if there was no match.
    * @private
    */
-  diff_halfMatchI_(longtext, shorttext, i, dmp) {
+  diff_halfMatchI_(longtext: string, shorttext: string, i: number, dmp: DiffMatchPatch): Array<string> {
     // Start with a 1/4 length substring at position i as a seed.
-    var seed = longtext.substring(i, i + Math.floor(longtext.length / 4));
-    var j = -1;
-    var best_common = '';
-    var best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b;
+    const seed = longtext.substring(i, i + Math.floor(longtext.length / 4));
+    let j = -1;
+    let best_common = '';
+    let best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b;
     while ((j = shorttext.indexOf(seed, j + 1)) != -1) {
-      var prefixLength = dmp.diff_commonPrefix(longtext.substring(i),
+      const prefixLength = dmp.diff_commonPrefix(longtext.substring(i),
                                               shorttext.substring(j));
-      var suffixLength = dmp.diff_commonSuffix(longtext.substring(0, i),
+      const suffixLength = dmp.diff_commonSuffix(longtext.substring(0, i),
                                               shorttext.substring(0, j));
       if (best_common.length < suffixLength + prefixLength) {
         best_common = shorttext.substring(j - suffixLength, j) +
@@ -699,20 +701,20 @@ class DiffMatchPatch {
    * Reduce the number of edits by eliminating semantically trivial equalities.
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    */
-    diff_cleanupSemantic (diffs) {
-    var changes = false;
-    var equalities = [];  // Stack of indices where equalities are found.
-    var equalitiesLength = 0;  // Keeping our own length var is faster in JS.
+    diff_cleanupSemantic (diffs: Array<Diff>) {
+    let changes = false;
+    const equalities = [];  // Stack of indices where equalities are found.
+    let equalitiesLength = 0;  // Keeping our own length const is faster in JS.
     /** @type {?string} */
-    var lastequality = null;
+    let lastequality = null;
     // Always equal to diffs[equalities[equalitiesLength - 1]][1]
-    var pointer = 0;  // Index of current position.
+    let pointer = 0;  // Index of current position.
     // Number of characters that changed prior to the equality.
-    var length_insertions1 = 0;
-    var length_deletions1 = 0;
+    let length_insertions1 = 0;
+    let length_deletions1 = 0;
     // Number of characters that changed after the equality.
-    var length_insertions2 = 0;
-    var length_deletions2 = 0;
+    let length_insertions2 = 0;
+    let length_deletions2 = 0;
     while (pointer < diffs.length) {
       if (diffs[pointer][0] == this.DIFF_EQUAL) {  // Equality found.
         equalities[equalitiesLength++] = pointer;
@@ -770,10 +772,10 @@ class DiffMatchPatch {
     while (pointer < diffs.length) {
       if (diffs[pointer - 1][0] == this.DIFF_DELETE &&
           diffs[pointer][0] == this.DIFF_INSERT) {
-        var deletion = diffs[pointer - 1][1];
-        var insertion = diffs[pointer][1];
-        var overlap_length1 = this.diff_commonOverlap_(deletion, insertion);
-        var overlap_length2 = this.diff_commonOverlap_(insertion, deletion);
+        const deletion = diffs[pointer - 1][1];
+        const insertion = diffs[pointer][1];
+        const overlap_length1 = this.diff_commonOverlap_(deletion, insertion);
+        const overlap_length2 = this.diff_commonOverlap_(insertion, deletion);
         if (overlap_length1 >= overlap_length2) {
           if (overlap_length1 >= deletion.length / 2 ||
               overlap_length1 >= insertion.length / 2) {
@@ -814,46 +816,46 @@ class DiffMatchPatch {
    * e.g: The c<ins>at c</ins>ame. -> The <ins>cat </ins>came.
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    */
-    diff_cleanupSemanticLossless (diffs) {
+    diff_cleanupSemanticLossless (diffs: Array<Diff>) {
     /**
      * Given two strings, compute a score representing whether the internal
      * boundary falls on logical boundaries.
      * Scores range from 6 (best) to 0 (worst).
-     * Closure, but does not reference any external variables.
+     * Closure, but does not reference any external constiables.
      * @param {string} one First string.
      * @param {string} two Second string.
      * @return {number} The score.
      * @private
      */
-    function diff_cleanupSemanticScore_(one, two) {
+    function diff_cleanupSemanticScore_(one: string, two: string): number {
       if (!one || !two) {
         // Edges are the best.
         return 6;
       }
 
 
-      var nonAlphaNumericRegex_ = new RegExp('/[^a-zA-Z0-9]/');
+      const nonAlphaNumericRegex_ = new RegExp('/[^a-zA-Z0-9]/');
 
       // Each port of this function behaves slightly differently due to
       // subtle differences in each language's definition of things like
       // 'whitespace'.  Since this function's purpose is largely cosmetic,
       // the choice has been made to use each language's native features
       // rather than force total conformity.
-      var char1 = one.charAt(one.length - 1);
-      var char2 = two.charAt(0);
-      var nonAlphaNumeric1 = char1.match(nonAlphaNumericRegex_);
-      var nonAlphaNumeric2 = char2.match(nonAlphaNumericRegex_);
-      var whitespace1 = nonAlphaNumeric1 &&
+      const char1 = one.charAt(one.length - 1);
+      const char2 = two.charAt(0);
+      const nonAlphaNumeric1 = char1.match(nonAlphaNumericRegex_);
+      const nonAlphaNumeric2 = char2.match(nonAlphaNumericRegex_);
+      const whitespace1 = nonAlphaNumeric1 &&
           char1.match(this.whitespaceRegex_);
-      var whitespace2 = nonAlphaNumeric2 &&
+      const whitespace2 = nonAlphaNumeric2 &&
           char2.match(this.whitespaceRegex_);
-      var lineBreak1 = whitespace1 &&
+      const lineBreak1 = whitespace1 &&
           char1.match(this.linebreakRegex_);
-      var lineBreak2 = whitespace2 &&
+      const lineBreak2 = whitespace2 &&
           char2.match(this.linebreakRegex_);
-      var blankLine1 = lineBreak1 &&
+      const blankLine1 = lineBreak1 &&
           one.match(this.blanklineEndRegex_);
-      var blankLine2 = lineBreak2 &&
+      const blankLine2 = lineBreak2 &&
           two.match(this.blanklineStartRegex_);
 
       if (blankLine1 || blankLine2) {
@@ -875,36 +877,36 @@ class DiffMatchPatch {
       return 0;
     }
 
-    var pointer = 1;
+    let pointer = 1;
     // Intentionally ignore the first and last element (don't need checking).
     while (pointer < diffs.length - 1) {
       if (diffs[pointer - 1][0] == this.DIFF_EQUAL &&
           diffs[pointer + 1][0] == this.DIFF_EQUAL) {
         // This is a single edit surrounded by equalities.
-        var equality1 = diffs[pointer - 1][1];
-        var edit = diffs[pointer][1];
-        var equality2 = diffs[pointer + 1][1];
+        let equality1 = diffs[pointer - 1][1];
+        let edit = diffs[pointer][1];
+        let equality2 = diffs[pointer + 1][1];
 
         // First, shift the edit as far left as possible.
-        var commonOffset = this.diff_commonSuffix(equality1, edit);
+        const commonOffset = this.diff_commonSuffix(equality1, edit);
         if (commonOffset) {
-          var commonString = edit.substring(edit.length - commonOffset);
+          const commonString = edit.substring(edit.length - commonOffset);
           equality1 = equality1.substring(0, equality1.length - commonOffset);
           edit = commonString + edit.substring(0, edit.length - commonOffset);
           equality2 = commonString + equality2;
         }
 
         // Second, step character by character right, looking for the best fit.
-        var bestEquality1 = equality1;
-        var bestEdit = edit;
-        var bestEquality2 = equality2;
-        var bestScore = diff_cleanupSemanticScore_(equality1, edit) +
+        let bestEquality1 = equality1;
+        let bestEdit = edit;
+        let bestEquality2 = equality2;
+        let bestScore = diff_cleanupSemanticScore_(equality1, edit) +
             diff_cleanupSemanticScore_(edit, equality2);
         while (edit.charAt(0) === equality2.charAt(0)) {
           equality1 += edit.charAt(0);
           edit = edit.substring(1) + equality2.charAt(0);
           equality2 = equality2.substring(1);
-          var score = diff_cleanupSemanticScore_(equality1, edit) +
+          const score = diff_cleanupSemanticScore_(equality1, edit) +
               diff_cleanupSemanticScore_(edit, equality2);
           // The >= encourages trailing rather than leading whitespace on edits.
           if (score >= bestScore) {
@@ -941,22 +943,22 @@ class DiffMatchPatch {
    * Reduce the number of edits by eliminating operationally trivial equalities.
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    */
-    diff_cleanupEfficiency (diffs) {
-    var changes = false;
-    var equalities = [];  // Stack of indices where equalities are found.
-    var equalitiesLength = 0;  // Keeping our own length var is faster in JS.
+    diff_cleanupEfficiency (diffs: Array<Diff>) {
+    let changes = false;
+    const equalities = [];  // Stack of indices where equalities are found.
+    let equalitiesLength = 0;  // Keeping our own length const is faster in JS.
     /** @type {?string} */
-    var lastequality = null;
+    let lastequality = null;
     // Always equal to diffs[equalities[equalitiesLength - 1]][1]
-    var pointer = 0;  // Index of current position.
+    let pointer = 0;  // Index of current position.
     // Is there an insertion operation before the last equality.
-    var pre_ins = false;
+    let pre_ins = false;
     // Is there a deletion operation before the last equality.
-    var pre_del = false;
+    let pre_del = false;
     // Is there an insertion operation after the last equality.
-    var post_ins = false;
+    let post_ins = false;
     // Is there a deletion operation after the last equality.
-    var post_del = false;
+    let post_del = false;
     while (pointer < diffs.length) {
       if (diffs[pointer][0] == this.DIFF_EQUAL) {  // Equality found.
         if (diffs[pointer][1].length < this.Diff_EditCost &&
@@ -1023,14 +1025,14 @@ class DiffMatchPatch {
    * Any edit section can move as long as it doesn't cross an equality.
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    */
-    diff_cleanupMerge (diffs) {
+    diff_cleanupMerge (diffs: Array<Diff>) {
     diffs.push([this.DIFF_EQUAL, '']);  // Add a dummy entry at the end.
-    var pointer = 0;
-    var count_delete = 0;
-    var count_insert = 0;
-    var text_delete = '';
-    var text_insert = '';
-    var commonlength;
+    let pointer = 0;
+    let count_delete = 0;
+    let count_insert = 0;
+    let text_delete = '';
+    let text_insert = '';
+    let commonlength;
     while (pointer < diffs.length) {
       switch (diffs[pointer][0]) {
         case this.DIFF_INSERT:
@@ -1109,7 +1111,7 @@ class DiffMatchPatch {
     // Second pass: look for single edits surrounded on both sides by equalities
     // which can be shifted sideways to eliminate an equality.
     // e.g: A<ins>BA</ins>C -> <ins>AB</ins>AC
-    var changes = false;
+    let changes = false;
     pointer = 1;
     // Intentionally ignore the first and last element (don't need checking).
     while (pointer < diffs.length - 1) {
@@ -1153,12 +1155,12 @@ class DiffMatchPatch {
    * @param {number} loc Location within text1.
    * @return {number} Location within text2.
    */
-    diff_xIndex (diffs, loc) {
-    var chars1 = 0;
-    var chars2 = 0;
-    var last_chars1 = 0;
-    var last_chars2 = 0;
-    var x;
+    diff_xIndex (diffs: Array<Diff>, loc: number): number {
+    let chars1 = 0;
+    let chars2 = 0;
+    let last_chars1 = 0;
+    let last_chars2 = 0;
+    let x;
     for (x = 0; x < diffs.length; x++) {
       if (diffs[x][0] !== this.DIFF_INSERT) {  // Equality or deletion.
         chars1 += diffs[x][1].length;
@@ -1186,16 +1188,16 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    * @return {string} HTML representation.
    */
-    diff_prettyHtml = function(diffs) {
-    var html = [];
-    var pattern_amp = /&/g;
-    var pattern_lt = /</g;
-    var pattern_gt = />/g;
-    var pattern_para = /\n/g;
-    for (var x = 0; x < diffs.length; x++) {
-      var op = diffs[x][0];    // Operation (insert, delete, equal)
-      var data = diffs[x][1];  // Text of change.
-      var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
+    diff_prettyHtml = function(diffs: Array<Diff>): string {
+    const html = [];
+    const pattern_amp = /&/g;
+    const pattern_lt = /</g;
+    const pattern_gt = />/g;
+    const pattern_para = /\n/g;
+    for (let x = 0; x < diffs.length; x++) {
+      const op = diffs[x][0];    // Operation (insert, delete, equal)
+      const data = diffs[x][1];  // Text of change.
+      const text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
           .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
       switch (op) {
         case this.DIFF_INSERT:
@@ -1218,9 +1220,9 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    * @return {string} Source text.
    */
-    diff_text1 (diffs) {
-    var text = [];
-    for (var x = 0; x < diffs.length; x++) {
+    diff_text1 (diffs: Array<Diff>): string {
+    const text = [];
+    for (let x = 0; x < diffs.length; x++) {
       if (diffs[x][0] !== this.DIFF_INSERT) {
         text[x] = diffs[x][1];
       }
@@ -1234,9 +1236,9 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    * @return {string} Destination text.
    */
-    diff_text2 (diffs) {
-    var text = [];
-    for (var x = 0; x < diffs.length; x++) {
+    diff_text2 (diffs: Array<Diff>): string {
+    const text = [];
+    for (let x = 0; x < diffs.length; x++) {
       if (diffs[x][0] !== this.DIFF_DELETE) {
         text[x] = diffs[x][1];
       }
@@ -1251,13 +1253,13 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    * @return {number} Number of changes.
    */
-    diff_levenshtein (diffs) {
-    var levenshtein = 0;
-    var insertions = 0;
-    var deletions = 0;
-    for (var x = 0; x < diffs.length; x++) {
-      var op = diffs[x][0];
-      var data = diffs[x][1];
+    diff_levenshtein (diffs: Array<Diff>): number {
+    let levenshtein = 0;
+    let insertions = 0;
+    let deletions = 0;
+    for (let x = 0; x < diffs.length; x++) {
+      const op = diffs[x][0];
+      const data = diffs[x][1];
       switch (op) {
         case this.DIFF_INSERT:
           insertions += data.length;
@@ -1286,9 +1288,9 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    * @return {string} Delta text.
    */
-    diff_toDelta (diffs) {
-    var text = [];
-    for (var x = 0; x < diffs.length; x++) {
+    diff_toDelta (diffs: Array<Diff>): string {
+    const text = [];
+    for (let x = 0; x < diffs.length; x++) {
       switch (diffs[x][0]) {
         case this.DIFF_INSERT:
           text[x] = '+' + encodeURI(diffs[x][1]);
@@ -1313,15 +1315,15 @@ class DiffMatchPatch {
    * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
    * @throws {!Error} If invalid input.
    */
-    diff_fromDelta (text1, delta) {
-    var diffs = [];
-    var diffsLength = 0;  // Keeping our own length var is faster in JS.
-    var pointer = 0;  // Cursor in text1
-    var tokens = delta.split(/\t/g);
-    for (var x = 0; x < tokens.length; x++) {
+    diff_fromDelta (text1: string, delta: string) {
+    const diffs = [];
+    let diffsLength = 0;  // Keeping our own length const is faster in JS.
+    let pointer = 0;  // Cursor in text1
+    const tokens = delta.split(/\t/g);
+    for (let x = 0; x < tokens.length; x++) {
       // Each token begins with a one character parameter which specifies the
       // operation of this token (delete, insert, equality).
-      var param = tokens[x].substring(1);
+      const param = tokens[x].substring(1);
       switch (tokens[x].charAt(0)) {
         case '+':
           try {
@@ -1334,11 +1336,11 @@ class DiffMatchPatch {
         case '-':
           // Fall through.
         case '=':
-          var n = parseInt(param, 10);
+          const n = parseInt(param, 10);
           if (isNaN(n) || n < 0) {
             throw new Error('Invalid number in diff_fromDelta: ' + param);
           }
-          var text = text1.substring(pointer, pointer += n);
+          const text = text1.substring(pointer, pointer += n);
           if (tokens[x].charAt(0) == '=') {
             diffs[diffsLength++] = [this.DIFF_EQUAL, text];
           } else {
@@ -1368,7 +1370,7 @@ class DiffMatchPatch {
    * @param {number} loc The location to search around.
    * @return {number} Best match index or -1.
    */
-    match_main (text, pattern, loc) {
+    match_main (text: string, pattern: string, loc: number): number {
     // Check for null inputs.
     if (text == null || pattern == null || loc == null) {
       throw new Error('Null input. (match_main)');
@@ -1400,15 +1402,15 @@ class DiffMatchPatch {
    * @return {number} Best match index or -1.
    * @private
    */
-    match_bitap_ (text, pattern, loc) {
+    match_bitap_ (text: string, pattern: string, loc: number): number {
     if (pattern.length > this.Match_MaxBits) {
       throw new Error('Pattern too long for this browser.');
     }
 
     // Initialise the alphabet.
-    var s = this.match_alphabet_(pattern);
+    const s = this.match_alphabet_(pattern);
 
-    var dmp = this;  // 'this' becomes 'window' in a closure.
+    const dmp = this;  // 'this' becomes 'window' in a closure.
 
     /**
      * Compute and return the score for a match with e errors and x location.
@@ -1418,9 +1420,9 @@ class DiffMatchPatch {
      * @return {number} Overall score for match (0.0 = good, 1.0 = bad).
      * @private
      */
-    function match_bitapScore_(e, x) {
-      var accuracy = e / pattern.length;
-      var proximity = Math.abs(loc - x);
+    function match_bitapScore_(e: number, x: number): number {
+      const accuracy = e / pattern.length;
+      const proximity = Math.abs(loc - x);
       if (!dmp.Match_Distance) {
         // Dodge divide by zero error.
         return proximity ? 1.0 : accuracy;
@@ -1429,9 +1431,9 @@ class DiffMatchPatch {
     }
 
     // Highest score beyond which we give up.
-    var score_threshold = this.Match_Threshold;
+    let score_threshold = this.Match_Threshold;
     // Is there a nearby exact match? (speedup)
-    var best_loc = text.indexOf(pattern, loc);
+    let best_loc = text.indexOf(pattern, loc);
     if (best_loc != -1) {
       score_threshold = Math.min(match_bitapScore_(0, best_loc), score_threshold);
       // What about in the other direction? (speedup)
@@ -1443,13 +1445,13 @@ class DiffMatchPatch {
     }
 
     // Initialise the bit arrays.
-    var matchmask = 1 << (pattern.length - 1);
+    const matchmask = 1 << (pattern.length - 1);
     best_loc = -1;
 
-    var bin_min, bin_mid;
-    var bin_max = pattern.length + text.length;
-    var last_rd;
-    for (var d = 0; d < pattern.length; d++) {
+    let bin_min, bin_mid;
+    let bin_max = pattern.length + text.length;
+    let last_rd;
+    for (let d = 0; d < pattern.length; d++) {
       // Scan for the best match; each iteration allows for one more error.
       // Run a binary search to determine how far from 'loc' we can stray at this
       // error level.
@@ -1465,15 +1467,15 @@ class DiffMatchPatch {
       }
       // Use the result from this iteration as the maximum for the next.
       bin_max = bin_mid;
-      var start = Math.max(1, loc - bin_mid + 1);
-      var finish = Math.min(loc + bin_mid, text.length) + pattern.length;
+      let start = Math.max(1, loc - bin_mid + 1);
+      const finish = Math.min(loc + bin_mid, text.length) + pattern.length;
 
-      var rd = Array(finish + 2);
+      const rd = Array(finish + 2);
       rd[finish + 1] = (1 << d) - 1;
-      for (var j = finish; j >= start; j--) {
+      for (let j = finish; j >= start; j--) {
         // The alphabet (s) is a sparse hash, so the following line generates
         // warnings.
-        var charMatch = s[text.charAt(j - 1)];
+        const charMatch = s[text.charAt(j - 1)];
         if (d === 0) {  // First pass: exact match.
           rd[j] = ((rd[j + 1] << 1) | 1) & charMatch;
         } else {  // Subsequent passes: fuzzy match.
@@ -1482,7 +1484,7 @@ class DiffMatchPatch {
                   last_rd[j + 1];
         }
         if (rd[j] & matchmask) {
-          var score = match_bitapScore_(d, j - 1);
+          const score = match_bitapScore_(d, j - 1);
           // This match will almost certainly be better than any existing match.
           // But check anyway.
           if (score <= score_threshold) {
@@ -1515,12 +1517,12 @@ class DiffMatchPatch {
    * @return {!Object} Hash of character locations.
    * @private
    */
-    match_alphabet_ (pattern) {
-    var s = {};
-    for (var i = 0; i < pattern.length; i++) {
+    match_alphabet_ (pattern: string): { [character: string]: number } {
+    const s: { [character: string]: number } = {};
+    for (let i = 0; i < pattern.length; i++) {
       s[pattern.charAt(i)] = 0;
     }
-    for (var i = 0; i < pattern.length; i++) {
+    for (let i = 0; i < pattern.length; i++) {
       s[pattern.charAt(i)] |= 1 << (pattern.length - i - 1);
     }
     return s;
@@ -1534,12 +1536,12 @@ class DiffMatchPatch {
    * @param {string} text Source text.
    * @private
    */
-    patch_addContext_ (patch, text) {
+    patch_addContext_ (patch: patch_obj, text: string) {
     if (text.length == 0) {
       return;
     }
-    var pattern = text.substring(patch.start2, patch.start2 + patch.length1);
-    var padding = 0;
+    let pattern = text.substring(patch.start2, patch.start2 + patch.length1);
+    let padding = 0;
 
     // Look for the first and last matches of pattern in text.  If two different
     // matches are found, increase the pattern length.
@@ -1554,12 +1556,12 @@ class DiffMatchPatch {
     padding += this.Patch_Margin;
 
     // Add the prefix.
-    var prefix = text.substring(patch.start2 - padding, patch.start2);
+    const prefix = text.substring(patch.start2 - padding, patch.start2);
     if (prefix) {
       patch.diffs.unshift([this.DIFF_EQUAL, prefix]);
     }
     // Add the suffix.
-    var suffix = text.substring(patch.start2 + patch.length1,
+    const suffix = text.substring(patch.start2 + patch.length1,
                                 patch.start2 + patch.length1 + padding);
     if (suffix) {
       patch.diffs.push([this.DIFF_EQUAL, suffix]);
@@ -1596,8 +1598,8 @@ class DiffMatchPatch {
    * for text1 to text2 (method 4) or undefined (methods 1,2,3).
    * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
    */
-    patch_make (a, opt_b, opt_c) {
-    var text1, diffs;
+    patch_make (a: string | Array<Diff>, opt_b: string | Array<Diff>, opt_c: string | Array<Diff>) {
+    let text1, diffs;
     if (typeof a == 'string' && typeof opt_b == 'string' &&
         typeof opt_c == 'undefined') {
       // Method 1: text1, text2
@@ -1632,19 +1634,19 @@ class DiffMatchPatch {
     if (diffs.length === 0) {
       return [];  // Get rid of the null case.
     }
-    var patches = [];
-    var patch = new patch_obj();
-    var patchDiffLength = 0;  // Keeping our own length var is faster in JS.
-    var char_count1 = 0;  // Number of characters into the text1 string.
-    var char_count2 = 0;  // Number of characters into the text2 string.
+    const patches = [];
+    let patch = new patch_obj();
+    let patchDiffLength = 0;  // Keeping our own length const is faster in JS.
+    let char_count1 = 0;  // Number of characters into the text1 string.
+    let char_count2 = 0;  // Number of characters into the text2 string.
     // Start with text1 (prepatch_text) and apply the diffs until we arrive at
     // text2 (postpatch_text).  We recreate the patches one by one to determine
     // context info.
-    var prepatch_text = text1;
-    var postpatch_text = text1;
-    for (var x = 0; x < diffs.length; x++) {
-      var diff_type = diffs[x][0];
-      var diff_text = diffs[x][1];
+    let prepatch_text = text1;
+    let postpatch_text = text1;
+    for (let x = 0; x < diffs.length; x++) {
+      const diff_type = diffs[x][0];
+      const diff_text = diffs[x][1];
 
       if (!patchDiffLength && diff_type !== this.DIFF_EQUAL) {
         // A new patch starts here.
@@ -1714,15 +1716,15 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
    * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
    */
-    patch_deepCopy (patches) {
+    patch_deepCopy (patches: Array<patch_obj>): Array<patch_obj> {
     // Making deep copies is hard in JavaScript.
-    var patchesCopy = [];
-    for (var x = 0; x < patches.length; x++) {
-      var patch = patches[x];
-      var patchCopy = new patch_obj();
+    const patchesCopy = [];
+    for (let x = 0; x < patches.length; x++) {
+      const patch = patches[x];
+      const patchCopy = new patch_obj();
       patchCopy.diffs = [];
-      for (var y = 0; y < patch.diffs.length; y++) {
-        patchCopy.diffs[y] = patch.diffs[y].slice();
+      for (let y = 0; y < patch.diffs.length; y++) {
+        patchCopy.diffs[y] = [patch.diffs[y][0], patch.diffs[y][1]];
       }
       patchCopy.start1 = patch.start1;
       patchCopy.start2 = patch.start2;
@@ -1742,7 +1744,7 @@ class DiffMatchPatch {
    * @return {!Array.<string|!Array.<boolean>>} Two element Array, containing the
    *      new text and an array of boolean values.
    */
-    patch_apply (patches, text) {
+    patch_apply (patches: Array<patch_obj>, text: string) {
     if (patches.length == 0) {
       return [text, []];
     }
@@ -1750,7 +1752,7 @@ class DiffMatchPatch {
     // Deep copy the patches so that no changes are made to originals.
     patches = this.patch_deepCopy(patches);
 
-    var nullPadding = this.patch_addPadding(patches);
+    const nullPadding = this.patch_addPadding(patches);
     text = nullPadding + text + nullPadding;
 
     this.patch_splitMax(patches);
@@ -1758,13 +1760,13 @@ class DiffMatchPatch {
     // of the previous patch.  If there are patches expected at positions 10 and
     // 20, but the first patch was found at 12, delta is 2 and the second patch
     // has an effective expected position of 22.
-    var delta = 0;
-    var results = [];
-    for (var x = 0; x < patches.length; x++) {
-      var expected_loc = patches[x].start2 + delta;
-      var text1 = this.diff_text1(patches[x].diffs);
-      var start_loc;
-      var end_loc = -1;
+    let delta = 0;
+    const results = [];
+    for (let x = 0; x < patches.length; x++) {
+      const expected_loc = patches[x].start2 + delta;
+      const text1 = this.diff_text1(patches[x].diffs);
+      let start_loc;
+      let end_loc = -1;
       if (text1.length > this.Match_MaxBits) {
         // patch_splitMax will only provide an oversized pattern in the case of
         // a monster delete.
@@ -1791,7 +1793,7 @@ class DiffMatchPatch {
         // Found a match.  :)
         results[x] = true;
         delta = start_loc - expected_loc;
-        var text2;
+        let text2;
         if (end_loc == -1) {
           text2 = text.substring(start_loc, start_loc + text1.length);
         } else {
@@ -1805,7 +1807,7 @@ class DiffMatchPatch {
         } else {
           // Imperfect match.  Run a diff to get a framework of equivalent
           // indices.
-          var diffs = this.diff_main(text1, text2, false);
+          const diffs = this.diff_main(text1, text2, false);
           if (text1.length > this.Match_MaxBits &&
               this.diff_levenshtein(diffs) / text1.length >
               this.Patch_DeleteThreshold) {
@@ -1813,10 +1815,10 @@ class DiffMatchPatch {
             results[x] = false;
           } else {
             this.diff_cleanupSemanticLossless(diffs);
-            var index1 = 0;
-            var index2;
-            for (var y = 0; y < patches[x].diffs.length; y++) {
-              var mod = patches[x].diffs[y];
+            let index1 = 0;
+            let index2;
+            for (let y = 0; y < patches[x].diffs.length; y++) {
+              const mod = patches[x].diffs[y];
               if (mod[0] !== this.DIFF_EQUAL) {
                 index2 = this.diff_xIndex(diffs, index1);
               }
@@ -1848,22 +1850,22 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
    * @return {string} The padding string added to each side.
    */
-    patch_addPadding (patches) {
-    var paddingLength = this.Patch_Margin;
-    var nullPadding = '';
-    for (var x = 1; x <= paddingLength; x++) {
+    patch_addPadding (patches: Array<patch_obj>) {
+    const paddingLength = this.Patch_Margin;
+    let nullPadding = '';
+    for (let x = 1; x <= paddingLength; x++) {
       nullPadding += String.fromCharCode(x);
     }
 
     // Bump all the patches forward.
-    for (var x = 0; x < patches.length; x++) {
+    for (let x = 0; x < patches.length; x++) {
       patches[x].start1 += paddingLength;
       patches[x].start2 += paddingLength;
     }
 
     // Add some padding on start of first diff.
-    var patch = patches[0];
-    var diffs = patch.diffs;
+    let patch = patches[0];
+    let diffs = patch.diffs;
     if (diffs.length == 0 || diffs[0][0] != this.DIFF_EQUAL) {
       // Add nullPadding equality.
       diffs.unshift([this.DIFF_EQUAL, nullPadding]);
@@ -1873,7 +1875,7 @@ class DiffMatchPatch {
       patch.length2 += paddingLength;
     } else if (paddingLength > diffs[0][1].length) {
       // Grow first equality.
-      var extraLength = paddingLength - diffs[0][1].length;
+      const extraLength = paddingLength - diffs[0][1].length;
       diffs[0][1] = nullPadding.substring(diffs[0][1].length) + diffs[0][1];
       patch.start1 -= extraLength;
       patch.start2 -= extraLength;
@@ -1891,7 +1893,7 @@ class DiffMatchPatch {
       patch.length2 += paddingLength;
     } else if (paddingLength > diffs[diffs.length - 1][1].length) {
       // Grow last equality.
-      var extraLength = paddingLength - diffs[diffs.length - 1][1].length;
+      const extraLength = paddingLength - diffs[diffs.length - 1][1].length;
       diffs[diffs.length - 1][1] += nullPadding.substring(0, extraLength);
       patch.length1 += extraLength;
       patch.length2 += extraLength;
@@ -1907,22 +1909,22 @@ class DiffMatchPatch {
    * Intended to be called only from within patch_apply.
    * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
    */
-    patch_splitMax = function(patches) {
-    var patch_size = this.Match_MaxBits;
-    for (var x = 0; x < patches.length; x++) {
+    patch_splitMax = function(patches: Array<patch_obj>) {
+    const patch_size = this.Match_MaxBits;
+    for (let x = 0; x < patches.length; x++) {
       if (patches[x].length1 <= patch_size) {
         continue;
       }
-      var bigpatch = patches[x];
+      const bigpatch = patches[x];
       // Remove the big old patch.
       patches.splice(x--, 1);
-      var start1 = bigpatch.start1;
-      var start2 = bigpatch.start2;
-      var precontext = '';
+      let start1 = bigpatch.start1;
+      let start2 = bigpatch.start2;
+      let precontext = '';
       while (bigpatch.diffs.length !== 0) {
         // Create one of several smaller patches.
-        var patch = new patch_obj();
-        var empty = true;
+        const patch = new patch_obj();
+        let empty = true;
         patch.start1 = start1 - precontext.length;
         patch.start2 = start2 - precontext.length;
         if (precontext !== '') {
@@ -1931,8 +1933,8 @@ class DiffMatchPatch {
         }
         while (bigpatch.diffs.length !== 0 &&
               patch.length1 < patch_size - this.Patch_Margin) {
-          var diff_type = bigpatch.diffs[0][0];
-          var diff_text = bigpatch.diffs[0][1];
+          const diff_type = bigpatch.diffs[0][0];
+          let diff_text = bigpatch.diffs[0][1];
           if (diff_type === this.DIFF_INSERT) {
             // Insertions are harmless.
             patch.length2 += diff_text.length;
@@ -1974,7 +1976,7 @@ class DiffMatchPatch {
         precontext =
             precontext.substring(precontext.length - this.Patch_Margin);
         // Append the end context for this patch.
-        var postcontext = this.diff_text1(bigpatch.diffs)
+        const postcontext = this.diff_text1(bigpatch.diffs)
                               .substring(0, this.Patch_Margin);
         if (postcontext !== '') {
           patch.length1 += postcontext.length;
@@ -1999,9 +2001,9 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
    * @return {string} Text representation of patches.
    */
-    patch_toText (patches) {
-    var text = [];
-    for (var x = 0; x < patches.length; x++) {
+    patch_toText (patches: Array<patch_obj>) {
+    const text = [];
+    for (let x = 0; x < patches.length; x++) {
       text[x] = patches[x];
     }
     return text.join('');
@@ -2014,20 +2016,20 @@ class DiffMatchPatch {
    * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
    * @throws {!Error} If invalid input.
    */
-    patch_fromText (textline) {
-    var patches = [];
+    patch_fromText (textline: string): Array<patch_obj> {
+    const patches: Array<patch_obj> = [];
     if (!textline) {
       return patches;
     }
-    var text = textline.split('\n');
-    var textPointer = 0;
-    var patchHeader = /^@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@$/;
+    const text = textline.split('\n');
+    let textPointer = 0;
+    const patchHeader = /^@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@$/;
     while (textPointer < text.length) {
-      var m = text[textPointer].match(patchHeader);
+      const m = text[textPointer].match(patchHeader);
       if (!m) {
         throw new Error('Invalid patch string: ' + text[textPointer]);
       }
-      var patch = new patch_obj();
+      const patch = new patch_obj();
       patches.push(patch);
       patch.start1 = parseInt(m[1], 10);
       if (m[2] === '') {
@@ -2053,9 +2055,10 @@ class DiffMatchPatch {
       textPointer++;
 
       while (textPointer < text.length) {
-        var sign = text[textPointer].charAt(0);
+        const sign = text[textPointer].charAt(0);
+        let line: string;
         try {
-          var line = decodeURI(text[textPointer].substring(1));
+          line = decodeURI(text[textPointer].substring(1));
         } catch (ex) {
           // Malformed URI sequence.
           throw new Error('Illegal escape in patch_fromText: ' + line);
@@ -2091,22 +2094,23 @@ class DiffMatchPatch {
  * Class representing one patch operation.
  * @constructor
  */
-class patch_obj {
+export class patch_obj {
 
   constructor() {  }
 
-  diffs = [];
-  start1 = null;
-  start2 = null;
+  diffs: Array<Diff> = [];
+  start1: number = null;
+  start2: number = null;
   length1: number = 0;
   length2: number = 0;
+
   /**
    * Emmulate GNU diff's format.
    * Header: @@ -382,8 +481,9 @@
    * Indicies are printed as 1-based, not 0-based.
    */
   toString = function() {
-    var coords1, coords2;
+    let coords1, coords2;
     if (this.length1 === 0) {
       coords1 = this.start1 + ',0';
     } else if (this.length1 == 1) {
@@ -2121,10 +2125,10 @@ class patch_obj {
     } else {
       coords2 = (this.start2 + 1) + ',' + this.length2;
     }
-    var text = ['@@ -' + coords1 + ' +' + coords2 + ' @@\n'];
-    var op;
+    const text = ['@@ -' + coords1 + ' +' + coords2 + ' @@\n'];
+    let op;
     // Escape the body of the patch with %xx notation.
-    for (var x = 0; x < this.diffs.length; x++) {
+    for (let x = 0; x < this.diffs.length; x++) {
       switch (this.diffs[x][0]) {
         case this.DIFF_INSERT:
           op = '+';
