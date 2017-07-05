@@ -1,6 +1,6 @@
 import { Directive, ElementRef, Input } from '@angular/core';
 import { DiffMatchPatchService } from './diffMatchPatch.service';
-import { Diff } from './diffMatchPatch';
+import { Diff, DiffOp } from './diffMatchPatch';
 
 @Directive({
   selector: '[lineDiff]',
@@ -22,13 +22,13 @@ export class LineDiffDirective {
     let html: string;
     html = '<div>';
     for(let diff of diffs) {
-      if(diff[0] === 0) {
+      if(diff[0] === DiffOp.Equal) {
         html += diff[1];
       }
-      if(diff[0] === -1) {
+      if(diff[0] === DiffOp.Delete) {
         html += '<div class=\"del\"> - <del>' + diff[1] + '</del></div>\n';
       }
-      if(diff[0] === 1) {
+      if(diff[0] === DiffOp.Insert) {
         html += '<div class=\"ins\"> + <ins>' + diff[1] + '</ins></div>\n';
       }
     }
