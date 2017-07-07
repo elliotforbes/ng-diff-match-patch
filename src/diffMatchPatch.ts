@@ -1,4 +1,10 @@
-export type Diff = [number, string];
+export const enum DiffOp {
+  Delete = -1,
+  Equal = 0,
+  Insert = 1
+}
+
+export type Diff = [DiffOp, string];
 
 /**
  * Class containing the diff, match and patch methods.
@@ -33,7 +39,7 @@ class DiffMatchPatch {
   Match_MaxBits = 32;
   /**
    * The data structure representing a diff is an array of tuples:
-   * [[DIFF_DELETE, 'Hello'], [DIFF_INSERT, 'Goodbye'], [this.DIFF_EQUAL, ' world.']]
+   * [[DiffOp.Delete, 'Hello'], [DiffOp.Insert, 'Goodbye'], [DiffOp.Equal, ' world.']]
    * which means: delete 'Hello', add 'Goodbye' and keep ' world.'
    */
 
@@ -42,11 +48,6 @@ class DiffMatchPatch {
   linebreakRegex_ = new RegExp('/[\r\n]/');
   blanklineEndRegex_ = new RegExp('/\n\r?\n$/');
   blanklineStartRegex_ = new RegExp('/^\r?\n\r?\n/');
-
-  DIFF_DELETE : number = -1;
-  DIFF_INSERT : number = 1;
-  DIFF_EQUAL : number= 0;
-
 
   /**
    * Find the differences between two texts.  Simplifies the problem by stripping
@@ -80,7 +81,7 @@ class DiffMatchPatch {
       // Check for equality (speedup).
       if (text1 == text2) {
         if (text1) {
-          return [[this.DIFF_EQUAL, text1]];
+          return [[DiffOp.Equal, text1]];
         }
         return [];
       }
@@ -107,10 +108,10 @@ class DiffMatchPatch {
 
       // Restore the prefix and suffix.
       if (commonprefix) {
-        diffs.unshift([this.DIFF_EQUAL, commonprefix]);
+        diffs.unshift([DiffOp.Equal, commonprefix]);
       }
       if (commonsuffix) {
-        diffs.push([this.DIFF_EQUAL, commonsuffix]);
+        diffs.push([DiffOp.Equal, commonsuffix]);
       }
       this.diff_cleanupMerge(diffs);
       return diffs;
@@ -135,12 +136,12 @@ class DiffMatchPatch {
 
     if (!text1) {
       // Just add some text (speedup).
-      return [[this.DIFF_INSERT, text2]];
+      return [[DiffOp.Insert, text2]];
     }
 
     if (!text2) {
       // Just delete some text (speedup).
-      return [[this.DIFF_DELETE, text1]];
+      return [[DiffOp.Delete, text1]];
     }
 
     const longtext = text1.length > text2.length ? text1 : text2;
@@ -148,12 +149,12 @@ class DiffMatchPatch {
     const i = longtext.indexOf(shorttext);
     if (i != -1) {
       // Shorter text is inside the longer text (speedup).
-      diffs = [[this.DIFF_INSERT, longtext.substring(0, i)],
-              [this.DIFF_EQUAL, shorttext],
-              [this.DIFF_INSERT, longtext.substring(i + shorttext.length)]];
+      diffs = [[DiffOp.Insert, longtext.substring(0, i)],
+              [DiffOp.Equal, shorttext],
+              [DiffOp.Insert, longtext.substring(i + shorttext.length)]];
       // Swap insertions for deletions if diff is reversed.
       if (text1.length > text2.length) {
-        diffs[0][0] = diffs[2][0] = this.DIFF_DELETE;
+        diffs[0][0] = diffs[2][0] = DiffOp.Delete;
       }
       return diffs;
     }
@@ -161,7 +162,7 @@ class DiffMatchPatch {
     if (shorttext.length == 1) {
       // Single character string.
       // After the previous speedup, the character can't be an equality.
-      return [[this.DIFF_DELETE, text1], [this.DIFF_INSERT, text2]];
+      return [[DiffOp.Delete, text1], [DiffOp.Insert, text2]];
     }
 
     // Check to see if the problem can be split in two.
@@ -177,7 +178,7 @@ class DiffMatchPatch {
       const diffs_a = this.diff_main(text1_a, text2_a, checklines, deadline);
       const diffs_b = this.diff_main(text1_b, text2_b, checklines, deadline);
       // Merge the results.
-      return diffs_a.concat([[this.DIFF_EQUAL, mid_common]], diffs_b);
+      return diffs_a.concat([[DiffOp.Equal, mid_common]], diffs_b);
     }
 
     if (checklines && text1.length > 100 && text2.length > 100) {
@@ -214,7 +215,7 @@ class DiffMatchPatch {
 
     // Rediff any replacement blocks, this time character-by-character.
     // Add a dummy entry at the end.
-    diffs.push([this.DIFF_EQUAL, '']);
+    diffs.push([DiffOp.Equal, '']);
     let pointer = 0;
     let count_delete = 0;
     let count_insert = 0;
@@ -222,15 +223,15 @@ class DiffMatchPatch {
     let text_insert = '';
     while (pointer < diffs.length) {
       switch (diffs[pointer][0]) {
-        case this.DIFF_INSERT:
+        case DiffOp.Insert:
           count_insert++;
           text_insert += diffs[pointer][1];
           break;
-        case this.DIFF_DELETE:
+        case DiffOp.Delete:
           count_delete++;
           text_delete += diffs[pointer][1];
           break;
-        case this.DIFF_EQUAL:
+        case DiffOp.Equal:
           // Upon reaching an equality, check for prior redundancies.
           if (count_delete >= 1 && count_insert >= 1) {
             // Delete the offending records and add the merged ones.
@@ -375,7 +376,7 @@ class DiffMatchPatch {
     }
     // Diff took too long and hit the deadline or
     // number of diffs equals number of characters, no commonality at all.
-    return [[this.DIFF_DELETE, text1], [this.DIFF_INSERT, text2]];
+    return [[DiffOp.Delete, text1], [DiffOp.Insert, text2]];
   };
 
 
@@ -716,7 +717,7 @@ class DiffMatchPatch {
     let length_insertions2 = 0;
     let length_deletions2 = 0;
     while (pointer < diffs.length) {
-      if (diffs[pointer][0] == this.DIFF_EQUAL) {  // Equality found.
+      if (diffs[pointer][0] == DiffOp.Equal) {  // Equality found.
         equalities[equalitiesLength++] = pointer;
         length_insertions1 = length_insertions2;
         length_deletions1 = length_deletions2;
@@ -724,7 +725,7 @@ class DiffMatchPatch {
         length_deletions2 = 0;
         lastequality = diffs[pointer][1];
       } else {  // An insertion or deletion.
-        if (diffs[pointer][0] == this.DIFF_INSERT) {
+        if (diffs[pointer][0] == DiffOp.Insert) {
           length_insertions2 += diffs[pointer][1].length;
         } else {
           length_deletions2 += diffs[pointer][1].length;
@@ -737,9 +738,9 @@ class DiffMatchPatch {
                                             length_deletions2))) {
           // Duplicate record.
           diffs.splice(equalities[equalitiesLength - 1], 0,
-                      [this.DIFF_DELETE, lastequality]);
+                      [DiffOp.Delete, lastequality]);
           // Change second copy to insert.
-          diffs[equalities[equalitiesLength - 1] + 1][0] = this.DIFF_INSERT;
+          diffs[equalities[equalitiesLength - 1] + 1][0] = DiffOp.Insert;
           // Throw away the equality we just deleted.
           equalitiesLength--;
           // Throw away the previous equality (it needs to be reevaluated).
@@ -770,8 +771,8 @@ class DiffMatchPatch {
     // Only extract an overlap if it is as big as the edit ahead or behind it.
     pointer = 1;
     while (pointer < diffs.length) {
-      if (diffs[pointer - 1][0] == this.DIFF_DELETE &&
-          diffs[pointer][0] == this.DIFF_INSERT) {
+      if (diffs[pointer - 1][0] == DiffOp.Delete &&
+          diffs[pointer][0] == DiffOp.Insert) {
         const deletion = diffs[pointer - 1][1];
         const insertion = diffs[pointer][1];
         const overlap_length1 = this.diff_commonOverlap_(deletion, insertion);
@@ -781,7 +782,7 @@ class DiffMatchPatch {
               overlap_length1 >= insertion.length / 2) {
             // Overlap found.  Insert an equality and trim the surrounding edits.
             diffs.splice(pointer, 0,
-                [this.DIFF_EQUAL, insertion.substring(0, overlap_length1)]);
+                [DiffOp.Equal, insertion.substring(0, overlap_length1)]);
             diffs[pointer - 1][1] =
                 deletion.substring(0, deletion.length - overlap_length1);
             diffs[pointer + 1][1] = insertion.substring(overlap_length1);
@@ -793,11 +794,11 @@ class DiffMatchPatch {
             // Reverse overlap found.
             // Insert an equality and swap and trim the surrounding edits.
             diffs.splice(pointer, 0,
-                [this.DIFF_EQUAL, deletion.substring(0, overlap_length2)]);
-            diffs[pointer - 1][0] = this.DIFF_INSERT;
+                [DiffOp.Equal, deletion.substring(0, overlap_length2)]);
+            diffs[pointer - 1][0] = DiffOp.Insert;
             diffs[pointer - 1][1] =
                 insertion.substring(0, insertion.length - overlap_length2);
-            diffs[pointer + 1][0] = this.DIFF_DELETE;
+            diffs[pointer + 1][0] = DiffOp.Delete;
             diffs[pointer + 1][1] =
                 deletion.substring(overlap_length2);
             pointer++;
@@ -880,8 +881,8 @@ class DiffMatchPatch {
     let pointer = 1;
     // Intentionally ignore the first and last element (don't need checking).
     while (pointer < diffs.length - 1) {
-      if (diffs[pointer - 1][0] == this.DIFF_EQUAL &&
-          diffs[pointer + 1][0] == this.DIFF_EQUAL) {
+      if (diffs[pointer - 1][0] == DiffOp.Equal &&
+          diffs[pointer + 1][0] == DiffOp.Equal) {
         // This is a single edit surrounded by equalities.
         let equality1 = diffs[pointer - 1][1];
         let edit = diffs[pointer][1];
@@ -960,7 +961,7 @@ class DiffMatchPatch {
     // Is there a deletion operation after the last equality.
     let post_del = false;
     while (pointer < diffs.length) {
-      if (diffs[pointer][0] == this.DIFF_EQUAL) {  // Equality found.
+      if (diffs[pointer][0] == DiffOp.Equal) {  // Equality found.
         if (diffs[pointer][1].length < this.Diff_EditCost &&
             (post_ins || post_del)) {
           // Candidate found.
@@ -975,7 +976,7 @@ class DiffMatchPatch {
         }
         post_ins = post_del = false;
       } else {  // An insertion or deletion.
-        if (diffs[pointer][0] == this.DIFF_DELETE) {
+        if (diffs[pointer][0] == DiffOp.Delete) {
           post_del = true;
         } else {
           post_ins = true;
@@ -993,9 +994,9 @@ class DiffMatchPatch {
                             ((pre_ins?1:0) + (pre_del?1:0) + (post_ins?1:0) + (post_del?1:0) == 3)))) {
           // Duplicate record.
           diffs.splice(equalities[equalitiesLength - 1], 0,
-                      [this.DIFF_DELETE, lastequality]);
+                      [DiffOp.Delete, lastequality]);
           // Change second copy to insert.
-          diffs[equalities[equalitiesLength - 1] + 1][0] = this.DIFF_INSERT;
+          diffs[equalities[equalitiesLength - 1] + 1][0] = DiffOp.Insert;
           equalitiesLength--;  // Throw away the equality we just deleted;
           lastequality = null;
           if (pre_ins && pre_del) {
@@ -1026,7 +1027,7 @@ class DiffMatchPatch {
    * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
    */
     diff_cleanupMerge (diffs: Array<Diff>) {
-    diffs.push([this.DIFF_EQUAL, '']);  // Add a dummy entry at the end.
+    diffs.push([DiffOp.Equal, '']);  // Add a dummy entry at the end.
     let pointer = 0;
     let count_delete = 0;
     let count_insert = 0;
@@ -1035,17 +1036,17 @@ class DiffMatchPatch {
     let commonlength;
     while (pointer < diffs.length) {
       switch (diffs[pointer][0]) {
-        case this.DIFF_INSERT:
+        case DiffOp.Insert:
           count_insert++;
           text_insert += diffs[pointer][1];
           pointer++;
           break;
-        case this.DIFF_DELETE:
+        case DiffOp.Delete:
           count_delete++;
           text_delete += diffs[pointer][1];
           pointer++;
           break;
-        case this.DIFF_EQUAL:
+        case DiffOp.Equal:
           // Upon reaching an equality, check for prior redundancies.
           if (count_delete + count_insert > 1) {
             if (count_delete !== 0 && count_insert !== 0) {
@@ -1054,11 +1055,11 @@ class DiffMatchPatch {
               if (commonlength !== 0) {
                 if ((pointer - count_delete - count_insert) > 0 &&
                     diffs[pointer - count_delete - count_insert - 1][0] ==
-                    this.DIFF_EQUAL) {
+                    DiffOp.Equal) {
                   diffs[pointer - count_delete - count_insert - 1][1] +=
                       text_insert.substring(0, commonlength);
                 } else {
-                  diffs.splice(0, 0, [this.DIFF_EQUAL,
+                  diffs.splice(0, 0, [DiffOp.Equal,
                                       text_insert.substring(0, commonlength)]);
                   pointer++;
                 }
@@ -1079,18 +1080,18 @@ class DiffMatchPatch {
             // Delete the offending records and add the merged ones.
             if (count_delete === 0) {
               diffs.splice(pointer - count_insert,
-                  count_delete + count_insert, [this.DIFF_INSERT, text_insert]);
+                  count_delete + count_insert, [DiffOp.Insert, text_insert]);
             } else if (count_insert === 0) {
               diffs.splice(pointer - count_delete,
-                  count_delete + count_insert, [this.DIFF_DELETE, text_delete]);
+                  count_delete + count_insert, [DiffOp.Delete, text_delete]);
             } else {
               diffs.splice(pointer - count_delete - count_insert,
-                  count_delete + count_insert, [this.DIFF_DELETE, text_delete],
-                  [this.DIFF_INSERT, text_insert]);
+                  count_delete + count_insert, [DiffOp.Delete, text_delete],
+                  [DiffOp.Insert, text_insert]);
             }
             pointer = pointer - count_delete - count_insert +
                       (count_delete ? 1 : 0) + (count_insert ? 1 : 0) + 1;
-          } else if (pointer !== 0 && diffs[pointer - 1][0] == this.DIFF_EQUAL) {
+          } else if (pointer !== 0 && diffs[pointer - 1][0] == DiffOp.Equal) {
             // Merge this equality with the previous one.
             diffs[pointer - 1][1] += diffs[pointer][1];
             diffs.splice(pointer, 1);
@@ -1115,8 +1116,8 @@ class DiffMatchPatch {
     pointer = 1;
     // Intentionally ignore the first and last element (don't need checking).
     while (pointer < diffs.length - 1) {
-      if (diffs[pointer - 1][0] == this.DIFF_EQUAL &&
-          diffs[pointer + 1][0] == this.DIFF_EQUAL) {
+      if (diffs[pointer - 1][0] == DiffOp.Equal &&
+          diffs[pointer + 1][0] == DiffOp.Equal) {
         // This is a single edit surrounded by equalities.
         if (diffs[pointer][1].substring(diffs[pointer][1].length -
             diffs[pointer - 1][1].length) == diffs[pointer - 1][1]) {
@@ -1162,10 +1163,10 @@ class DiffMatchPatch {
     let last_chars2 = 0;
     let x;
     for (x = 0; x < diffs.length; x++) {
-      if (diffs[x][0] !== this.DIFF_INSERT) {  // Equality or deletion.
+      if (diffs[x][0] !== DiffOp.Insert) {  // Equality or deletion.
         chars1 += diffs[x][1].length;
       }
-      if (diffs[x][0] !== this.DIFF_DELETE) {  // Equality or insertion.
+      if (diffs[x][0] !== DiffOp.Delete) {  // Equality or insertion.
         chars2 += diffs[x][1].length;
       }
       if (chars1 > loc) {  // Overshot the location.
@@ -1175,7 +1176,7 @@ class DiffMatchPatch {
       last_chars2 = chars2;
     }
     // Was the location was deleted?
-    if (diffs.length != x && diffs[x][0] === this.DIFF_DELETE) {
+    if (diffs.length != x && diffs[x][0] === DiffOp.Delete) {
       return last_chars2;
     }
     // Add the remaining character length.
@@ -1200,13 +1201,13 @@ class DiffMatchPatch {
       const text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
           .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
       switch (op) {
-        case this.DIFF_INSERT:
+        case DiffOp.Insert:
           html[x] = '<ins style="background:#e6ffe6;">' + text + '</ins>';
           break;
-        case this.DIFF_DELETE:
+        case DiffOp.Delete:
           html[x] = '<del style="background:#ffe6e6;">' + text + '</del>';
           break;
-        case this.DIFF_EQUAL:
+        case DiffOp.Equal:
           html[x] = '<span>' + text + '</span>';
           break;
       }
@@ -1223,7 +1224,7 @@ class DiffMatchPatch {
     diff_text1 (diffs: Array<Diff>): string {
     const text = [];
     for (let x = 0; x < diffs.length; x++) {
-      if (diffs[x][0] !== this.DIFF_INSERT) {
+      if (diffs[x][0] !== DiffOp.Insert) {
         text[x] = diffs[x][1];
       }
     }
@@ -1239,7 +1240,7 @@ class DiffMatchPatch {
     diff_text2 (diffs: Array<Diff>): string {
     const text = [];
     for (let x = 0; x < diffs.length; x++) {
-      if (diffs[x][0] !== this.DIFF_DELETE) {
+      if (diffs[x][0] !== DiffOp.Delete) {
         text[x] = diffs[x][1];
       }
     }
@@ -1261,13 +1262,13 @@ class DiffMatchPatch {
       const op = diffs[x][0];
       const data = diffs[x][1];
       switch (op) {
-        case this.DIFF_INSERT:
+        case DiffOp.Insert:
           insertions += data.length;
           break;
-        case this.DIFF_DELETE:
+        case DiffOp.Delete:
           deletions += data.length;
           break;
-        case this.DIFF_EQUAL:
+        case DiffOp.Equal:
           // A deletion and an insertion is one substitution.
           levenshtein += Math.max(insertions, deletions);
           insertions = 0;
@@ -1292,13 +1293,13 @@ class DiffMatchPatch {
     const text = [];
     for (let x = 0; x < diffs.length; x++) {
       switch (diffs[x][0]) {
-        case this.DIFF_INSERT:
+        case DiffOp.Insert:
           text[x] = '+' + encodeURI(diffs[x][1]);
           break;
-        case this.DIFF_DELETE:
+        case DiffOp.Delete:
           text[x] = '-' + diffs[x][1].length;
           break;
-        case this.DIFF_EQUAL:
+        case DiffOp.Equal:
           text[x] = '=' + diffs[x][1].length;
           break;
       }
@@ -1327,7 +1328,7 @@ class DiffMatchPatch {
       switch (tokens[x].charAt(0)) {
         case '+':
           try {
-            diffs[diffsLength++] = [this.DIFF_INSERT, decodeURI(param)];
+            diffs[diffsLength++] = [DiffOp.Insert, decodeURI(param)];
           } catch (ex) {
             // Malformed URI sequence.
             throw new Error('Illegal escape in diff_fromDelta: ' + param);
@@ -1342,9 +1343,9 @@ class DiffMatchPatch {
           }
           const text = text1.substring(pointer, pointer += n);
           if (tokens[x].charAt(0) == '=') {
-            diffs[diffsLength++] = [this.DIFF_EQUAL, text];
+            diffs[diffsLength++] = [DiffOp.Equal, text];
           } else {
-            diffs[diffsLength++] = [this.DIFF_DELETE, text];
+            diffs[diffsLength++] = [DiffOp.Delete, text];
           }
           break;
         default:
@@ -1558,13 +1559,13 @@ class DiffMatchPatch {
     // Add the prefix.
     const prefix = text.substring(patch.start2 - padding, patch.start2);
     if (prefix) {
-      patch.diffs.unshift([this.DIFF_EQUAL, prefix]);
+      patch.diffs.unshift([DiffOp.Equal, prefix]);
     }
     // Add the suffix.
     const suffix = text.substring(patch.start2 + patch.length1,
                                 patch.start2 + patch.length1 + padding);
     if (suffix) {
-      patch.diffs.push([this.DIFF_EQUAL, suffix]);
+      patch.diffs.push([DiffOp.Equal, suffix]);
     }
 
     // Roll back the start points.
@@ -1648,27 +1649,27 @@ class DiffMatchPatch {
       const diff_type = diffs[x][0];
       const diff_text = diffs[x][1];
 
-      if (!patchDiffLength && diff_type !== this.DIFF_EQUAL) {
+      if (!patchDiffLength && diff_type !== DiffOp.Equal) {
         // A new patch starts here.
         patch.start1 = char_count1;
         patch.start2 = char_count2;
       }
 
       switch (diff_type) {
-        case this.DIFF_INSERT:
+        case DiffOp.Insert:
           patch.diffs[patchDiffLength++] = diffs[x];
           patch.length2 += diff_text.length;
           postpatch_text = postpatch_text.substring(0, char_count2) + diff_text +
                           postpatch_text.substring(char_count2);
           break;
-        case this.DIFF_DELETE:
+        case DiffOp.Delete:
           patch.length1 += diff_text.length;
           patch.diffs[patchDiffLength++] = diffs[x];
           postpatch_text = postpatch_text.substring(0, char_count2) +
                           postpatch_text.substring(char_count2 +
                               diff_text.length);
           break;
-        case this.DIFF_EQUAL:
+        case DiffOp.Equal:
           if (diff_text.length <= 2 * this.Patch_Margin &&
               patchDiffLength && diffs.length != x + 1) {
             // Small equality inside a patch.
@@ -1694,10 +1695,10 @@ class DiffMatchPatch {
       }
 
       // Update the current character count.
-      if (diff_type !== this.DIFF_INSERT) {
+      if (diff_type !== DiffOp.Insert) {
         char_count1 += diff_text.length;
       }
-      if (diff_type !== this.DIFF_DELETE) {
+      if (diff_type !== DiffOp.Delete) {
         char_count2 += diff_text.length;
       }
     }
@@ -1819,18 +1820,18 @@ class DiffMatchPatch {
             let index2;
             for (let y = 0; y < patches[x].diffs.length; y++) {
               const mod = patches[x].diffs[y];
-              if (mod[0] !== this.DIFF_EQUAL) {
+              if (mod[0] !== DiffOp.Equal) {
                 index2 = this.diff_xIndex(diffs, index1);
               }
-              if (mod[0] === this.DIFF_INSERT) {  // Insertion
+              if (mod[0] === DiffOp.Insert) {  // Insertion
                 text = text.substring(0, start_loc + index2) + mod[1] +
                       text.substring(start_loc + index2);
-              } else if (mod[0] === this.DIFF_DELETE) {  // Deletion
+              } else if (mod[0] === DiffOp.Delete) {  // Deletion
                 text = text.substring(0, start_loc + index2) +
                       text.substring(start_loc + this.diff_xIndex(diffs,
                           index1 + mod[1].length));
               }
-              if (mod[0] !== this.DIFF_DELETE) {
+              if (mod[0] !== DiffOp.Delete) {
                 index1 += mod[1].length;
               }
             }
@@ -1866,9 +1867,9 @@ class DiffMatchPatch {
     // Add some padding on start of first diff.
     let patch = patches[0];
     let diffs = patch.diffs;
-    if (diffs.length == 0 || diffs[0][0] != this.DIFF_EQUAL) {
+    if (diffs.length == 0 || diffs[0][0] != DiffOp.Equal) {
       // Add nullPadding equality.
-      diffs.unshift([this.DIFF_EQUAL, nullPadding]);
+      diffs.unshift([DiffOp.Equal, nullPadding]);
       patch.start1 -= paddingLength;  // Should be 0.
       patch.start2 -= paddingLength;  // Should be 0.
       patch.length1 += paddingLength;
@@ -1886,9 +1887,9 @@ class DiffMatchPatch {
     // Add some padding on end of last diff.
     patch = patches[patches.length - 1];
     diffs = patch.diffs;
-    if (diffs.length == 0 || diffs[diffs.length - 1][0] != this.DIFF_EQUAL) {
+    if (diffs.length == 0 || diffs[diffs.length - 1][0] != DiffOp.Equal) {
       // Add nullPadding equality.
-      diffs.push([this.DIFF_EQUAL, nullPadding]);
+      diffs.push([DiffOp.Equal, nullPadding]);
       patch.length1 += paddingLength;
       patch.length2 += paddingLength;
     } else if (paddingLength > diffs[diffs.length - 1][1].length) {
@@ -1929,20 +1930,20 @@ class DiffMatchPatch {
         patch.start2 = start2 - precontext.length;
         if (precontext !== '') {
           patch.length1 = patch.length2 = precontext.length;
-          patch.diffs.push([this.DIFF_EQUAL, precontext]);
+          patch.diffs.push([DiffOp.Equal, precontext]);
         }
         while (bigpatch.diffs.length !== 0 &&
               patch.length1 < patch_size - this.Patch_Margin) {
           const diff_type = bigpatch.diffs[0][0];
           let diff_text = bigpatch.diffs[0][1];
-          if (diff_type === this.DIFF_INSERT) {
+          if (diff_type === DiffOp.Insert) {
             // Insertions are harmless.
             patch.length2 += diff_text.length;
             start2 += diff_text.length;
             patch.diffs.push(bigpatch.diffs.shift());
             empty = false;
-          } else if (diff_type === this.DIFF_DELETE && patch.diffs.length == 1 &&
-                    patch.diffs[0][0] == this.DIFF_EQUAL &&
+          } else if (diff_type === DiffOp.Delete && patch.diffs.length == 1 &&
+                    patch.diffs[0][0] == DiffOp.Equal &&
                     diff_text.length > 2 * patch_size) {
             // This is a large deletion.  Let it pass in one chunk.
             patch.length1 += diff_text.length;
@@ -1956,7 +1957,7 @@ class DiffMatchPatch {
                 patch_size - patch.length1 - this.Patch_Margin);
             patch.length1 += diff_text.length;
             start1 += diff_text.length;
-            if (diff_type === this.DIFF_EQUAL) {
+            if (diff_type === DiffOp.Equal) {
               patch.length2 += diff_text.length;
               start2 += diff_text.length;
             } else {
@@ -1982,10 +1983,10 @@ class DiffMatchPatch {
           patch.length1 += postcontext.length;
           patch.length2 += postcontext.length;
           if (patch.diffs.length !== 0 &&
-              patch.diffs[patch.diffs.length - 1][0] === this.DIFF_EQUAL) {
+              patch.diffs[patch.diffs.length - 1][0] === DiffOp.Equal) {
             patch.diffs[patch.diffs.length - 1][1] += postcontext;
           } else {
-            patch.diffs.push([this.DIFF_EQUAL, postcontext]);
+            patch.diffs.push([DiffOp.Equal, postcontext]);
           }
         }
         if (!empty) {
@@ -2065,13 +2066,13 @@ class DiffMatchPatch {
         }
         if (sign == '-') {
           // Deletion.
-          patch.diffs.push([this.DIFF_DELETE, line]);
+          patch.diffs.push([DiffOp.Delete, line]);
         } else if (sign == '+') {
           // Insertion.
-          patch.diffs.push([this.DIFF_INSERT, line]);
+          patch.diffs.push([DiffOp.Insert, line]);
         } else if (sign == ' ') {
           // Minor equality.
-          patch.diffs.push([this.DIFF_EQUAL, line]);
+          patch.diffs.push([DiffOp.Equal, line]);
         } else if (sign == '@') {
           // Start of next patch.
           break;
@@ -2130,13 +2131,13 @@ export class patch_obj {
     // Escape the body of the patch with %xx notation.
     for (let x = 0; x < this.diffs.length; x++) {
       switch (this.diffs[x][0]) {
-        case this.DIFF_INSERT:
+        case DiffOp.Insert:
           op = '+';
           break;
-        case this.DIFF_DELETE:
+        case DiffOp.Delete:
           op = '-';
           break;
-        case this.DIFF_EQUAL:
+        case DiffOp.Equal:
           op = ' ';
           break;
       }

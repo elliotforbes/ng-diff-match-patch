@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DiffMatchPatch } from './diffMatchPatch';
+import { DiffMatchPatch, DiffOp } from './diffMatchPatch';
 
 @Injectable()
 export class DiffMatchPatchService {
