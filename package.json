@@ -1,6 +1,6 @@
 {
   "name": "ng-diff-match-patch",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "A Diff-Match-Patch component for your Angular 2 + applications",
   "main": "diffMatchPatch.bundle.js",
   "module": "diffMatchPatch.module.js",
