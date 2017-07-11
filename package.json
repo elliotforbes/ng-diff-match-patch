@@ -8,7 +8,8 @@
   "types": "diffMatchPatch.module.d.ts",
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig-esm.json && rollup -c rollup.config.js dist/diffMatchPatch.module.js > dist/diffMatchPatch.bundle.js && cp package.json dist && ngc && cp README.md dist",
-    "test": "karma start karma.conf.js"
+    "test": "karma start karma.conf.js",
+    "npmpublish": "cd dist && npm publish"
   },
   "repository": {
     "type": "git",
