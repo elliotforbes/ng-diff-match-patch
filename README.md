@@ -1,7 +1,7 @@
 Ng-Diff-Match-Patch
 =====================
 
-[![Build Status](https://travis-ci.org/rars/ng-diff-match-patch.svg?branch=master)](https://travis-ci.org/rars/ng-diff-match-patch)
+[![Build Status](https://travis-ci.org/elliotforbes/ng-diff-match-patch.svg?branch=master)](https://travis-ci.org/elliotforbes/ng-diff-match-patch)
 
 This is a port of the [angular-diff-match-patch](https://github.com/amweiss/angular-diff-match-patch) wrapper for AngularJS. 
 
