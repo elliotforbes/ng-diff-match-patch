@@ -1,34 +1,45 @@
-import { Directive, ElementRef, Input } from '@angular/core';
+import { Directive, ElementRef, Input, OnInit, OnChanges } from '@angular/core';
 import { DiffMatchPatchService } from './diffMatchPatch.service';
 import { Diff, DiffOp } from './diffMatchPatch';
 
 @Directive({
   selector: '[processingDiff]'
 })
-export class ProcessingDiffDirective { 
+export class ProcessingDiffDirective implements OnInit, OnChanges {
   @Input() left: string;
   @Input() right: string;
 
-  constructor(private el: ElementRef, private dmp: DiffMatchPatchService) {  }
+  public constructor(
+    private el: ElementRef,
+    private dmp: DiffMatchPatchService) {  }
 
-  ngOnInit () {
-    this.el.nativeElement.innerHTML = this.createHtml(this.dmp.getProcessingDiff(this.left, this.right));
+  public ngOnInit(): void {
+    this.updateHtml();
+  }
+
+  public ngOnChanges(): void {
+    this.updateHtml();
+  }
+
+  private updateHtml(): void {
+    this.el.nativeElement.innerHTML = this.createHtml(
+      this.dmp.getProcessingDiff(this.left, this.right));
   }
 
   // TODO: Need to fix this for line diffs
-  createHtml (diffs: Array<Diff>) {
+  private createHtml(diffs: Array<Diff>): string {
     let html: string;
     html = '<div>';
-    for(let diff of diffs) {
+    for (let diff of diffs) {
       diff[1] = diff[1].replace(/\n/g, '<br/>');
 
-      if(diff[0] === DiffOp.Equal) {
+      if (diff[0] === DiffOp.Equal) {
         html += diff[1];
       }
-      if(diff[0] === DiffOp.Delete) {
+      if (diff[0] === DiffOp.Delete) {
         html += '<del>' + diff[1] + '</del>';
       }
-      if(diff[0] === DiffOp.Insert) {
+      if (diff[0] === DiffOp.Insert) {
         html += '<ins>' + diff[1] + '</ins>';
       }
     }
