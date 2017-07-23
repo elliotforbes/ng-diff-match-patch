@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Diff, DiffOp } from './diffMatchPatch';
 import { DiffMatchPatchService } from './diffMatchPatch.service';
 
@@ -44,7 +44,7 @@ import { DiffMatchPatchService } from './diffMatchPatch.service';
     </div>
   `
 })
-export class LineCompareComponent implements OnInit {
+export class LineCompareComponent implements OnInit, OnChanges {
   @Input()
   public left: string | number | boolean;
   @Input()
@@ -56,6 +56,14 @@ export class LineCompareComponent implements OnInit {
       private dmp: DiffMatchPatchService) {}
 
   public ngOnInit(): void {
+    this.updateHtml();
+  }
+
+  public ngOnChanges(): void {
+    this.updateHtml();
+  }
+
+  private updateHtml(): void {
     if (typeof this.left === 'number' || typeof this.left === 'boolean') {
       this.left = this.left.toString();
     }
