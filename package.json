@@ -1,15 +1,11 @@
 {
   "name": "ng-diff-match-patch",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "A Diff-Match-Patch component for your Angular 2 + applications",
   "main": "diffMatchPatch.bundle.js",
   "module": "diffMatchPatch.module.js",
   "jsnext:main": "diffMatchPatch.module.js",
   "types": "diffMatchPatch.module.d.ts",
-  "files": [
-    "dist/",
-    "index.ts"
-  ],
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig-esm.json && rollup -c rollup.config.js dist/diffMatchPatch.module.js > dist/diffMatchPatch.bundle.js && cp package.json dist && ngc && cp README.md dist",
     "test": "karma start --single-run",
