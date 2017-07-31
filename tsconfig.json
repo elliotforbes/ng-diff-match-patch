@@ -3,6 +3,7 @@
     "target": "es5",
     "module": "commonjs",
     "sourceMap": true,
+    "inlineSources": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "declaration": true,
