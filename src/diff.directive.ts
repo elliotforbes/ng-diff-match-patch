@@ -34,7 +34,7 @@ export class DiffDirective implements OnInit, OnChanges {
       diff[1] = diff[1].replace(/\n/g, '<br/>');
 
       if(diff[0] === DiffOp.Equal) {
-        html += diff[1];
+        html += '<span class="equal">' + diff[1] + '</span>';
       }
       if(diff[0] === DiffOp.Delete) {
         html += '<del>' + diff[1] + '</del>';
