@@ -37,7 +37,7 @@ export class LineDiffDirective implements OnInit, OnChanges {
     html = '<div>';
     for (let diff of diffs) {
       if (diff[0] === DiffOp.Equal) {
-        html += diff[1];
+        html += '<span class="equal">' + diff[1] + '</span>';
       }
       if (diff[0] === DiffOp.Delete) {
         html += '<div class=\"del\"> - <del>' + diff[1] + '</del></div>\n';
