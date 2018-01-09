@@ -1,8 +1,8 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common')) :
 	typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/common'], factory) :
-	(factory((global.diffMatchPatch = global.diffMatchPatch || {}),global._angular_core,global._angular_common));
-}(this, (function (exports,_angular_core,_angular_common) { 'use strict';
+	(factory((global.diffMatchPatch = {}),global.core,global.common));
+}(this, (function (exports,core,common) { 'use strict';
 
 /**
  * Class containing the diff, match and patch methods.
@@ -2129,7 +2129,7 @@ var DiffMatchPatchService = /** @class */ (function () {
         return this.dmp;
     };
     DiffMatchPatchService = __decorate$2([
-        _angular_core.Injectable(),
+        core.Injectable(),
         __metadata$1("design:paramtypes", [DiffMatchPatch])
     ], DiffMatchPatchService);
     return DiffMatchPatchService;
@@ -2178,18 +2178,18 @@ var DiffDirective = /** @class */ (function () {
         return html;
     };
     __decorate$1([
-        _angular_core.Input(),
+        core.Input(),
         __metadata("design:type", String)
     ], DiffDirective.prototype, "left", void 0);
     __decorate$1([
-        _angular_core.Input(),
+        core.Input(),
         __metadata("design:type", String)
     ], DiffDirective.prototype, "right", void 0);
     DiffDirective = __decorate$1([
-        _angular_core.Directive({
+        core.Directive({
             selector: '[diff]'
         }),
-        __metadata("design:paramtypes", [_angular_core.ElementRef,
+        __metadata("design:paramtypes", [core.ElementRef,
             DiffMatchPatchService])
     ], DiffDirective);
     return DiffDirective;
@@ -2244,18 +2244,18 @@ var LineDiffDirective = /** @class */ (function () {
         return html;
     };
     __decorate$3([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$2("design:type", Object)
     ], LineDiffDirective.prototype, "left", void 0);
     __decorate$3([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$2("design:type", Object)
     ], LineDiffDirective.prototype, "right", void 0);
     LineDiffDirective = __decorate$3([
-        _angular_core.Directive({
+        core.Directive({
             selector: '[lineDiff]',
         }),
-        __metadata$2("design:paramtypes", [_angular_core.ElementRef,
+        __metadata$2("design:paramtypes", [core.ElementRef,
             DiffMatchPatchService])
     ], LineDiffDirective);
     return LineDiffDirective;
@@ -2305,18 +2305,18 @@ var ProcessingDiffDirective = /** @class */ (function () {
         return html;
     };
     __decorate$4([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$3("design:type", String)
     ], ProcessingDiffDirective.prototype, "left", void 0);
     __decorate$4([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$3("design:type", String)
     ], ProcessingDiffDirective.prototype, "right", void 0);
     ProcessingDiffDirective = __decorate$4([
-        _angular_core.Directive({
+        core.Directive({
             selector: '[processingDiff]'
         }),
-        __metadata$3("design:paramtypes", [_angular_core.ElementRef,
+        __metadata$3("design:paramtypes", [core.ElementRef,
             DiffMatchPatchService])
     ], ProcessingDiffDirective);
     return ProcessingDiffDirective;
@@ -2378,18 +2378,18 @@ var SemanticDiffDirective = /** @class */ (function () {
         return html;
     };
     __decorate$5([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$4("design:type", Object)
     ], SemanticDiffDirective.prototype, "left", void 0);
     __decorate$5([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$4("design:type", Object)
     ], SemanticDiffDirective.prototype, "right", void 0);
     SemanticDiffDirective = __decorate$5([
-        _angular_core.Directive({
+        core.Directive({
             selector: '[semanticDiff]'
         }),
-        __metadata$4("design:paramtypes", [_angular_core.ElementRef,
+        __metadata$4("design:paramtypes", [core.ElementRef,
             DiffMatchPatchService])
     ], SemanticDiffDirective);
     return SemanticDiffDirective;
@@ -2528,19 +2528,19 @@ var LineCompareComponent = /** @class */ (function () {
         }
     };
     __decorate$6([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$5("design:type", Object)
     ], LineCompareComponent.prototype, "left", void 0);
     __decorate$6([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$5("design:type", Object)
     ], LineCompareComponent.prototype, "right", void 0);
     __decorate$6([
-        _angular_core.Input(),
+        core.Input(),
         __metadata$5("design:type", Number)
     ], LineCompareComponent.prototype, "lineContextSize", void 0);
     LineCompareComponent = __decorate$6([
-        _angular_core.Component({
+        core.Component({
             selector: 'dmp-line-compare',
             styles: ["\n    div.dmp-line-compare {\n      display: flex;\n      flex-direction: row;\n      border: 1px solid #808080;\n      font-family: Consolas, Courier, monospace;\n      width: 911px;\n    }\n    div.dmp-line-compare-margin {\n      width: 101px;\n    }\n    div.dmp-line-compare-content {\n      position: relative;\n      top: 0px;\n      left: 0px;\n      flex-grow: 1;\n      overflow-x: scroll;\n    }\n    div.dmp-line-compare-content-wrapper {\n      position: absolute;\n      top: 0px;\n      left: 0px;\n      display: flex;\n      flex-direction: column;\n      align-items: stretch;\n    }\n    div.dmp-line-compare-left {\n      width: 50px;\n      text-align: center;\n      color: #484848;\n    }\n    div.dmp-line-compare-equal>div.dmp-line-compare-left,\n      div.dmp-line-compare-equal>div.dmp-line-compare-right {\n      background-color: #dedede;\n    }\n    div.dmp-line-compare-insert>div.dmp-line-compare-left,\n      div.dmp-line-compare-insert>div.dmp-line-compare-right {\n      background-color: #8bfb6f;\n    }\n    div.dmp-line-compare-delete>div.dmp-line-compare-left,\n      div.dmp-line-compare-delete>div.dmp-line-compare-right {\n      background-color: #f56868;\n    }\n    div.dmp-line-compare-right {\n      width: 50px;\n      text-align: center;\n      color: #484848;\n      border-right: 1px solid #888888;\n    }\n    div.dmp-line-compare-text {\n      white-space: pre;\n      padding-left: 10px;\n      min-width: 800px;\n    }\n    .dmp-line-compare-delete {\n      background-color: #ff8c8c;\n    }\n    .dmp-line-compare-insert {\n      background-color: #9dff97;\n    }\n    .dmp-line-compare-delete>div {\n      display: inline-block;\n    }  \n    .dmp-line-compare-insert>div {\n      display: inline-block;\n    }\n    .dmp-line-compare-equal>div {\n      display: inline-block;\n    }\n    .dmp-margin-bottom-spacer {\n      height: 20px;\n      background-color: #dedede;\n      border-right: 1px solid #888888;\n    }\n  "],
             template: "\n    <div class=\"dmp-line-compare-no-changes-text\" *ngIf=\"isContentEqual\">\n      There are no changes to display.\n    </div>    \n    <div class=\"dmp-line-compare\" *ngIf=\"!isContentEqual\">\n      <div class=\"dmp-line-compare-margin\">\n        <div [ngClass]=\"lineDiff[0]\" *ngFor=\"let lineDiff of calculatedDiff\">\n          <div class=\"dmp-line-compare-left\">{{lineDiff[1]}}</div><!-- No space\n        --><div class=\"dmp-line-compare-right\">{{lineDiff[2]}}</div>\n        </div>\n        <div class=\"dmp-margin-bottom-spacer\"></div>\n      </div><!-- No space\n   --><div class=\"dmp-line-compare-content\">\n        <div class=\"dmp-line-compare-content-wrapper\">\n          <div [ngClass]=\"lineDiff[0]\" *ngFor=\"let lineDiff of calculatedDiff\">\n            <div class=\"dmp-line-compare-text\">{{lineDiff[3]}}</div>\n          </div>\n        </div>\n      </div>\n    </div>\n  "
@@ -2560,7 +2560,7 @@ var DiffMatchPatchModule = /** @class */ (function () {
     function DiffMatchPatchModule() {
     }
     DiffMatchPatchModule = __decorate([
-        _angular_core.NgModule({
+        core.NgModule({
             declarations: [
                 DiffDirective,
                 LineDiffDirective,
@@ -2569,7 +2569,7 @@ var DiffMatchPatchModule = /** @class */ (function () {
                 LineCompareComponent
             ],
             imports: [
-                _angular_common.CommonModule
+                common.CommonModule
             ],
             exports: [
                 DiffDirective,
