@@ -11,7 +11,7 @@
     "start": "ng serve",
     "build": "ng build ng-diff-match-patch --prod",
     "publish": "npm run build && npm publish dist/ng-diff-match-patch",
-    "test": "ng test ng-diff-match-patch",
+    "test": "ng test ng-diff-match-patch --watch=false",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "npmpublish": "npm run build && npm publish dist/ng-diff-match-patch"
