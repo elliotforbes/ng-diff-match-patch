@@ -1,32 +1,73 @@
-// Karma configuration file, see link for more information
-// https://karma-runner.github.io/1.0/config/configuration-file.html
+//jshint strict: false
+module.exports = function(config) {
+  config.set({
 
-module.exports = function (config) {
-    config.set({
-        basePath: '',
-        frameworks: ['jasmine', '@angular-devkit/build-angular'],
-        plugins: [
-            require('karma-jasmine'),
-            require('karma-chrome-launcher'),
-            require('karma-jasmine-html-reporter'),
-            require('karma-coverage-istanbul-reporter'),
-            require('@angular-devkit/build-angular/plugins/karma')
-        ],
-        client: {
-            clearContext: false // leave Jasmine Spec Runner output visible in browser
-        },
-        coverageIstanbulReporter: {
-            dir: require('path').join(__dirname, '../../coverage'),
-            reports: ['html', 'lcovonly'],
-            fixWebpackSourcePaths: true
-        },
-        reporters: ['progress', 'kjhtml'],
-        port: 9876,
-        colors: true,
-        logLevel: config.LOG_INFO,
-        browsers: [process.env.TRAVIS ? 'Firefox' : 'Chrome'],
-        captureTimeout: 60000,
-        autoWatch: true,
-        singleRun: false
-    });
+    basePath: '',
+
+    files: [
+      'src/test.ts'
+    ],
+
+    preprocessors: {
+      'src/test.ts': ['webpack', 'sourcemap']
+    },
+
+    webpack: {
+      // karma watches the test entry points
+      // webpack watches dependencies
+      devtool: 'inline-source-map',
+      resolve: {
+        extensions: ['.js', '.ts']
+      },
+      module: {
+        rules: [
+          {
+            test: /\.ts(x?)$/,
+            use: [
+              {
+                loader: 'ts-loader'
+              }
+            ]
+          }
+        ]
+      }
+    },
+
+    webpackMiddleware: {
+      stats: 'errors-only'
+    },
+
+    mime: {
+      'text/x-typescript': ['ts','tsx']
+    },
+
+    frameworks: ['jasmine', 'sinon'],
+
+    plugins: [
+      'karma-chrome-launcher',
+      'karma-firefox-launcher',
+      'karma-sourcemap-loader',
+      'karma-webpack',
+      'karma-jasmine',
+      'karma-sinon',
+      'karma-jasmine-html-reporter'
+    ],
+
+    reporters: [
+      'dots',
+      'kjhtml'
+    ],
+
+    // port: 9876,
+    colors: true,
+
+    logLevel: config.LOG_INFO,
+
+    browsers: [process.env.TRAVIS ? 'Firefox' : 'Chrome'],
+
+    captureTimeout: 60000,
+
+    autoWatch: true,
+    singleRun: false
+  });
 };
