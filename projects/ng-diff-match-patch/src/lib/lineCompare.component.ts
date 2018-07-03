@@ -122,7 +122,7 @@ export class LineCompareComponent implements OnInit, OnChanges {
   @Input()
   public lineContextSize: number;
 
-  public calculatedDiff: Array<[string, string, string]>;
+  public calculatedDiff: Array<[string, string, string, string]>;
   public isContentEqual: boolean;
 
   public constructor(
