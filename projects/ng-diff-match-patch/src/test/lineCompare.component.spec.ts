@@ -1,8 +1,8 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, async, TestBed, ComponentFixture } from '@angular/core/testing';
-import { LineCompareComponent } from '../src/lineCompare.component';
-import { DiffMatchPatchService } from '../src/diffMatchPatch.service';
-import { Diff, DiffOp } from '../src/diffMatchPatch';
+import { LineCompareComponent } from '../lib/lineCompare.component';
+import { DiffMatchPatchService } from '../lib/diffMatchPatch.service';
+import { Diff, DiffOp } from '../lib/diffMatchPatch';
 import * as sinon from 'sinon';
 
 class DiffMatchPatchServiceMock {

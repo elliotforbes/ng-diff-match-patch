@@ -1,7 +1,7 @@
 import { getTestBed, TestBed, inject, async } from '@angular/core/testing';
 
-import { DiffMatchPatchService } from '../src/diffMatchPatch.service';
-import { DiffMatchPatch, Diff, DiffOp } from '../src/diffMatchPatch';
+import { DiffMatchPatchService } from '../lib/diffMatchPatch.service';
+import { DiffMatchPatch, Diff, DiffOp } from '../lib/diffMatchPatch';
 import * as sinon from 'sinon';
 
 describe('DiffMatchPatchService', () => {
