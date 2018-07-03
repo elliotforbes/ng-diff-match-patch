@@ -1,21 +1,28 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
     "sourceMap": true,
-    "inlineSources": true,
+    "declaration": false,
+    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "declaration": true,
-    "outDir": "./dist",
-    "noImplicitAny": true,
-    "lib": ["es2015", "dom"],
-    "noStrictGenericChecks": true
-  },
-  "files": [
-    "./src/diffMatchPatch.module.ts"
-  ],
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "paths": {
+      "ng-diff-match-patch": [
+        "dist/ng-diff-match-patch"
+      ],
+      "ng-diff-match-patch/*": [
+        "dist/ng-diff-match-patch/*"
+      ]
+    }
   }
 }
