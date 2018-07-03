@@ -1,0 +1,42 @@
+{
+  "name": "ng-diff-match-patch",
+  "version": "2.0.6",
+  "description": "A Diff-Match-Patch component for your Angular 2 + applications",
+  "main": "bundles/ng-diff-match-patch.umd.js",
+  "module": "fesm5/ng-diff-match-patch.js",
+  "jsnext:main": "diffMatchPatch.module.js",
+  "types": "diffMatchPatch.module.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elliotforbes/ng-diff-match-patch"
+  },
+  "keywords": [
+    "angular",
+    "ng2",
+    "diff-match-patch"
+  ],
+  "author": "Elliot Forbes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elliotforbes/ng-diff-match-patch/issues"
+  },
+  "contributors": [
+    "Anders Törnkvist (https://github.com/AndersTornkvist)"
+  ],
+  "homepage": "https://github.com/elliotforbes/ng-diff-match-patch#readme",
+  "peerDependencies": {
+    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0"
+  },
+  "es2015": "fesm2015/ng-diff-match-patch.js",
+  "esm5": "esm5/ng-diff-match-patch.js",
+  "esm2015": "esm2015/ng-diff-match-patch.js",
+  "fesm5": "fesm5/ng-diff-match-patch.js",
+  "fesm2015": "fesm2015/ng-diff-match-patch.js",
+  "typings": "ng-diff-match-patch.d.ts",
+  "metadata": "ng-diff-match-patch.metadata.json",
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^1.9.0"
+  }
+}
