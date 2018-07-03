@@ -8,7 +8,7 @@ export type Diff = [DiffOp, string];
 
 /**
  * Class containing the diff, match and patch methods.
- * @constructor
+
  */
 class DiffMatchPatch {
 
@@ -52,15 +52,15 @@ class DiffMatchPatch {
   /**
    * Find the differences between two texts.  Simplifies the problem by stripping
    * any common prefix or suffix off the texts before diffing.
-   * @param {string} text1 Old string to be diffed.
-   * @param {string} text2 New string to be diffed.
-   * @param {boolean=} opt_checklines Optional speedup flag. If present and false,
+   * @param  text1 Old string to be diffed.
+   * @param  text2 New string to be diffed.
+   * @param  opt_checklines Optional speedup flag. If present and false,
    *     then don't run a line-level diff first to identify the changed areas.
    *     Defaults to true, which does a faster, slightly less optimal diff.
-   * @param {number} opt_deadline Optional time when the diff should be complete
+   * @param  opt_deadline Optional time when the diff should be complete
    *     by.  Used internally for recursive calls.  Users should set DiffTimeout
    *     instead.
-   * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
+   * @return  Array of diff tuples.
    */
     diff_main (text1: string, text2: string, opt_checklines?: boolean, opt_deadline?: number): Array<Diff> {
       // Set a deadline by which time the diff must be complete.
@@ -121,14 +121,14 @@ class DiffMatchPatch {
   /**
    * Find the differences between two texts.  Assumes that the texts do not
    * have any common prefix or suffix.
-   * @param {string} text1 Old string to be diffed.
-   * @param {string} text2 New string to be diffed.
-   * @param {boolean} checklines Speedup flag.  If false, then don't run a
+   * @param  text1 Old string to be diffed.
+   * @param  text2 New string to be diffed.
+   * @param  checklines Speedup flag.  If false, then don't run a
    *     line-level diff first to identify the changed areas.
    *     If true, then run a faster, slightly less optimal diff.
-   * @param {number} deadline Time when the diff should be complete by.
-   * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
-   * @private
+   * @param  deadline Time when the diff should be complete by.
+   * @return  Array of diff tuples.
+
    */
     diff_compute_ (text1: string, text2: string, checklines: boolean,
       deadline: number): Array<Diff> {
@@ -193,11 +193,11 @@ class DiffMatchPatch {
    * Do a quick line-level diff on both strings, then rediff the parts for
    * greater accuracy.
    * This speedup can produce non-minimal diffs.
-   * @param {string} text1 Old string to be diffed.
-   * @param {string} text2 New string to be diffed.
-   * @param {number} deadline Time when the diff should be complete by.
-   * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
-   * @private
+   * @param  text1 Old string to be diffed.
+   * @param  text2 New string to be diffed.
+   * @param  deadline Time when the diff should be complete by.
+   * @return  Array of diff tuples.
+
    */
     diff_lineMode_ (text1: string, text2: string, deadline: number) {
     // Scan the text on a line-by-line basis first.
@@ -262,11 +262,11 @@ class DiffMatchPatch {
    * Find the 'middle snake' of a diff, split the problem in two
    * and return the recursively constructed diff.
    * See Myers 1986 paper: An O(ND) Difference Algorithm and Its constiations.
-   * @param {string} text1 Old string to be diffed.
-   * @param {string} text2 New string to be diffed.
-   * @param {number} deadline Time at which to bail if not yet complete.
-   * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
-   * @private
+   * @param  text1 Old string to be diffed.
+   * @param  text2 New string to be diffed.
+   * @param  deadline Time at which to bail if not yet complete.
+   * @return  Array of diff tuples.
+
    */
     diff_bisect_ (text1: string, text2: string, deadline: number): Array<Diff> {
     // Cache the text lengths to prevent multiple calls.
@@ -383,13 +383,13 @@ class DiffMatchPatch {
   /**
    * Given the location of the 'middle snake', split the diff in two parts
    * and recurse.
-   * @param {string} text1 Old string to be diffed.
-   * @param {string} text2 New string to be diffed.
-   * @param {number} x Index of split point in text1.
-   * @param {number} y Index of split point in text2.
-   * @param {number} deadline Time at which to bail if not yet complete.
-   * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
-   * @private
+   * @param  text1 Old string to be diffed.
+   * @param  text2 New string to be diffed.
+   * @param  x Index of split point in text1.
+   * @param  y Index of split point in text2.
+   * @param  deadline Time at which to bail if not yet complete.
+   * @return  Array of diff tuples.
+
    */
     diff_bisectSplit_ (text1: string, text2: string, x: number, y: number, deadline: number) {
       const text1a = text1.substring(0, x);
@@ -408,13 +408,13 @@ class DiffMatchPatch {
   /**
    * Split two texts into an array of strings.  Reduce the texts to a string of
    * hashes where each Unicode character represents one line.
-   * @param {string} text1 First string.
-   * @param {string} text2 Second string.
-   * @return {{chars1: string, chars2: string, lineArray: !Array.<string>}}
+   * @param  text1 First string.
+   * @param  text2 Second string.
+   * @return }
    *     An object containing the encoded text1, the encoded text2 and
    *     the array of unique strings.
    *     The zeroth element of the array of unique strings is intentionally blank.
-   * @private
+
    */
     diff_linesToChars_ (text1: string, text2: string) {
       const lineArray = [];  // e.g. lineArray[4] == 'Hello\n'
@@ -434,9 +434,9 @@ class DiffMatchPatch {
    * Split a text into an array of strings.  Reduce the texts to a string of
    * hashes where each Unicode character represents one line.
    * Modifies linearray and linehash through being a closure.
-   * @param {string} text String to encode.
-   * @return {string} Encoded string.
-   * @private
+   * @param  text String to encode.
+   * @return  Encoded string.
+
    */
   diff_linesToCharsMunge_(text: string, lineArray: Array<string>, lineHash: any): string {
     let chars = '';
@@ -470,9 +470,9 @@ class DiffMatchPatch {
   /**
    * Rehydrate the text in a diff from a string of line hashes to real lines of
    * text.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
-   * @param {!Array.<string>} lineArray Array of unique strings.
-   * @private
+   * @param  diffs Array of diff tuples.
+   * @param  lineArray Array of unique strings.
+
    */
     diff_charsToLines_ (diffs: Array<Diff>, lineArray: Array<string>): void {
     for (let x = 0; x < diffs.length; x++) {
@@ -488,9 +488,9 @@ class DiffMatchPatch {
 
   /**
    * Determine the common prefix of two strings.
-   * @param {string} text1 First string.
-   * @param {string} text2 Second string.
-   * @return {number} The number of characters common to the start of each
+   * @param  text1 First string.
+   * @param  text2 Second string.
+   * @return  The number of characters common to the start of each
    *     string.
    */
     diff_commonPrefix (text1: string, text2: string): number {
@@ -520,9 +520,9 @@ class DiffMatchPatch {
 
   /**
    * Determine the common suffix of two strings.
-   * @param {string} text1 First string.
-   * @param {string} text2 Second string.
-   * @return {number} The number of characters common to the end of each string.
+   * @param  text1 First string.
+   * @param  text2 Second string.
+   * @return  The number of characters common to the end of each string.
    */
     diff_commonSuffix (text1: string, text2: string): number {
     // Quick check for common null cases.
@@ -552,11 +552,11 @@ class DiffMatchPatch {
 
   /**
    * Determine if the suffix of one string is the prefix of another.
-   * @param {string} text1 First string.
-   * @param {string} text2 Second string.
-   * @return {number} The number of characters common to the end of the first
+   * @param  text1 First string.
+   * @param  text2 Second string.
+   * @return  The number of characters common to the end of the first
    *     string and the start of the second string.
-   * @private
+
    */
     diff_commonOverlap_ (text1: string, text2: string): number {
     // Cache the text lengths to prevent multiple calls.
@@ -603,12 +603,12 @@ class DiffMatchPatch {
    * Do the two texts share a substring which is at least half the length of the
    * longer text?
    * This speedup can produce non-minimal diffs.
-   * @param {string} text1 First string.
-   * @param {string} text2 Second string.
-   * @return {Array.<string>} Five element Array, containing the prefix of
+   * @param  text1 First string.
+   * @param  text2 Second string.
+   * @return  Five element Array, containing the prefix of
    *     text1, the suffix of text1, the prefix of text2, the suffix of
    *     text2 and the common middle.  Or null if there was no match.
-   * @private
+
    */
     diff_halfMatch_ (text1: string, text2: string) {
     if (this.Diff_Timeout <= 0) {
@@ -662,13 +662,13 @@ class DiffMatchPatch {
    * Does a substring of shorttext exist within longtext such that the substring
    * is at least half the length of longtext?
    * Closure, but does not reference any external constiables.
-   * @param {string} longtext Longer string.
-   * @param {string} shorttext Shorter string.
-   * @param {number} i Start index of quarter length substring within longtext.
-   * @return {Array.<string>} Five element Array, containing the prefix of
+   * @param  longtext Longer string.
+   * @param  shorttext Shorter string.
+   * @param  i Start index of quarter length substring within longtext.
+   * @return  Five element Array, containing the prefix of
    *     longtext, the suffix of longtext, the prefix of shorttext, the suffix
    *     of shorttext and the common middle.  Or null if there was no match.
-   * @private
+
    */
   diff_halfMatchI_(longtext: string, shorttext: string, i: number, dmp: DiffMatchPatch): Array<string> {
     // Start with a 1/4 length substring at position i as a seed.
@@ -700,13 +700,13 @@ class DiffMatchPatch {
 
   /**
    * Reduce the number of edits by eliminating semantically trivial equalities.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
+   * @param  diffs Array of diff tuples.
    */
     diff_cleanupSemantic (diffs: Array<Diff>) {
     let changes = false;
     const equalities = [];  // Stack of indices where equalities are found.
     let equalitiesLength = 0;  // Keeping our own length const is faster in JS.
-    /** @type {?string} */
+
     let lastequality = null;
     // Always equal to diffs[equalities[equalitiesLength - 1]][1]
     let pointer = 0;  // Index of current position.
@@ -815,7 +815,7 @@ class DiffMatchPatch {
    * Look for single edits surrounded on both sides by equalities
    * which can be shifted sideways to align the edit to a word boundary.
    * e.g: The c<ins>at c</ins>ame. -> The <ins>cat </ins>came.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
+   * @param  diffs Array of diff tuples.
    */
     diff_cleanupSemanticLossless (diffs: Array<Diff>) {
     /**
@@ -823,10 +823,10 @@ class DiffMatchPatch {
      * boundary falls on logical boundaries.
      * Scores range from 6 (best) to 0 (worst).
      * Closure, but does not reference any external constiables.
-     * @param {string} one First string.
-     * @param {string} two Second string.
-     * @return {number} The score.
-     * @private
+     * @param  one First string.
+     * @param  two Second string.
+     * @return  The score.
+
      */
     function diff_cleanupSemanticScore_(one: string, two: string): number {
       if (!one || !two) {
@@ -942,13 +942,13 @@ class DiffMatchPatch {
 
   /**
    * Reduce the number of edits by eliminating operationally trivial equalities.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
+   * @param  diffs Array of diff tuples.
    */
     diff_cleanupEfficiency (diffs: Array<Diff>) {
     let changes = false;
     const equalities = [];  // Stack of indices where equalities are found.
     let equalitiesLength = 0;  // Keeping our own length const is faster in JS.
-    /** @type {?string} */
+
     let lastequality = null;
     // Always equal to diffs[equalities[equalitiesLength - 1]][1]
     let pointer = 0;  // Index of current position.
@@ -1024,7 +1024,7 @@ class DiffMatchPatch {
   /**
    * Reorder and merge like edit sections.  Merge equalities.
    * Any edit section can move as long as it doesn't cross an equality.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
+   * @param  diffs Array of diff tuples.
    */
     diff_cleanupMerge (diffs: Array<Diff>) {
     diffs.push([DiffOp.Equal, '']);  // Add a dummy entry at the end.
@@ -1152,9 +1152,9 @@ class DiffMatchPatch {
    * loc is a location in text1, compute and return the equivalent location in
    * text2.
    * e.g. 'The cat' vs 'The big cat', 1->1, 5->8
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
-   * @param {number} loc Location within text1.
-   * @return {number} Location within text2.
+   * @param  diffs Array of diff tuples.
+   * @param  loc Location within text1.
+   * @return  Location within text2.
    */
     diff_xIndex (diffs: Array<Diff>, loc: number): number {
     let chars1 = 0;
@@ -1186,8 +1186,8 @@ class DiffMatchPatch {
 
   /**
    * Convert a diff array into a pretty HTML report.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
-   * @return {string} HTML representation.
+   * @param  diffs Array of diff tuples.
+   * @return  HTML representation.
    */
     diff_prettyHtml = function(diffs: Array<Diff>): string {
     const html = [];
@@ -1218,8 +1218,8 @@ class DiffMatchPatch {
 
   /**
    * Compute and return the source text (all equalities and deletions).
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
-   * @return {string} Source text.
+   * @param  diffs Array of diff tuples.
+   * @return  Source text.
    */
     diff_text1 (diffs: Array<Diff>): string {
     const text = [];
@@ -1234,8 +1234,8 @@ class DiffMatchPatch {
 
   /**
    * Compute and return the destination text (all equalities and insertions).
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
-   * @return {string} Destination text.
+   * @param  diffs Array of diff tuples.
+   * @return  Destination text.
    */
     diff_text2 (diffs: Array<Diff>): string {
     const text = [];
@@ -1251,8 +1251,8 @@ class DiffMatchPatch {
   /**
    * Compute the Levenshtein distance; the number of inserted, deleted or
    * substituted characters.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
-   * @return {number} Number of changes.
+   * @param  diffs Array of diff tuples.
+   * @return  Number of changes.
    */
     diff_levenshtein (diffs: Array<Diff>): number {
     let levenshtein = 0;
@@ -1286,8 +1286,8 @@ class DiffMatchPatch {
    * required to transform text1 into text2.
    * E.g. =3\t-2\t+ing  -> Keep 3 chars, delete 2 chars, insert 'ing'.
    * Operations are tab-separated.  Inserted text is escaped using %xx notation.
-   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
-   * @return {string} Delta text.
+   * @param  diffs Array of diff tuples.
+   * @return  Delta text.
    */
     diff_toDelta (diffs: Array<Diff>): string {
     const text = [];
@@ -1311,9 +1311,9 @@ class DiffMatchPatch {
   /**
    * Given the original text1, and an encoded string which describes the
    * operations required to transform text1 into text2, compute the full diff.
-   * @param {string} text1 Source string for the diff.
-   * @param {string} delta Delta text.
-   * @return {!Array.<!diff_match_patch.Diff>} Array of diff tuples.
+   * @param  text1 Source string for the diff.
+   * @param  delta Delta text.
+   * @return  Array of diff tuples.
    * @throws {!Error} If invalid input.
    */
     diff_fromDelta (text1: string, delta: string) {
@@ -1366,10 +1366,10 @@ class DiffMatchPatch {
 
   /**
    * Locate the best instance of 'pattern' in 'text' near 'loc'.
-   * @param {string} text The text to search.
-   * @param {string} pattern The pattern to search for.
-   * @param {number} loc The location to search around.
-   * @return {number} Best match index or -1.
+   * @param  text The text to search.
+   * @param  pattern The pattern to search for.
+   * @param  loc The location to search around.
+   * @return  Best match index or -1.
    */
     match_main (text: string, pattern: string, loc: number): number {
     // Check for null inputs.
@@ -1397,11 +1397,11 @@ class DiffMatchPatch {
   /**
    * Locate the best instance of 'pattern' in 'text' near 'loc' using the
    * Bitap algorithm.
-   * @param {string} text The text to search.
-   * @param {string} pattern The pattern to search for.
-   * @param {number} loc The location to search around.
-   * @return {number} Best match index or -1.
-   * @private
+   * @param  text The text to search.
+   * @param  pattern The pattern to search for.
+   * @param  loc The location to search around.
+   * @return  Best match index or -1.
+
    */
     match_bitap_ (text: string, pattern: string, loc: number): number {
     if (pattern.length > this.Match_MaxBits) {
@@ -1416,10 +1416,10 @@ class DiffMatchPatch {
     /**
      * Compute and return the score for a match with e errors and x location.
      * Accesses loc and pattern through being a closure.
-     * @param {number} e Number of errors in match.
-     * @param {number} x Location of match.
-     * @return {number} Overall score for match (0.0 = good, 1.0 = bad).
-     * @private
+     * @param  e Number of errors in match.
+     * @param  x Location of match.
+     * @return  Overall score for match (0.0 = good, 1.0 = bad).
+
      */
     function match_bitapScore_(e: number, x: number): number {
       const accuracy = e / pattern.length;
@@ -1514,9 +1514,9 @@ class DiffMatchPatch {
 
   /**
    * Initialise the alphabet for the Bitap algorithm.
-   * @param {string} pattern The text to encode.
-   * @return {!Object} Hash of character locations.
-   * @private
+   * @param  pattern The text to encode.
+   * @return  Hash of character locations.
+
    */
     match_alphabet_ (pattern: string): { [character: string]: number } {
     const s: { [character: string]: number } = {};
@@ -1533,9 +1533,9 @@ class DiffMatchPatch {
   /**
    * Increase the context until it is unique,
    * but don't let the pattern expand beyond Match_MaxBits.
-   * @param {!diff_match_patch.patch_obj} patch The patch to grow.
-   * @param {string} text Source text.
-   * @private
+   * @param  patch The patch to grow.
+   * @param  text Source text.
+
    */
     patch_addContext_ (patch: patch_obj, text: string) {
     if (text.length == 0) {
@@ -1591,13 +1591,13 @@ class DiffMatchPatch {
    * Method 4 (deprecated, use method 3):
    * a = text1, b = text2, c = diffs
    *
-   * @param {string|!Array.<!diff_match_patch.Diff>} a text1 (methods 1,3,4) or
+   * @param  a text1 (methods 1,3,4) or
    * Array of diff tuples for text1 to text2 (method 2).
-   * @param {string|!Array.<!diff_match_patch.Diff>} opt_b text2 (methods 1,4) or
+   * @param  opt_b text2 (methods 1,4) or
    * Array of diff tuples for text1 to text2 (method 3) or undefined (method 2).
-   * @param {string|!Array.<!diff_match_patch.Diff>} opt_c Array of diff tuples
+   * @param  opt_c Array of diff tuples
    * for text1 to text2 (method 4) or undefined (methods 1,2,3).
-   * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
+   * @return  Array of Patch objects.
    */
     patch_make (a: string | Array<Diff>, opt_b: string | Array<Diff>, opt_c: string | Array<Diff>) {
     let text1, diffs;
@@ -1605,8 +1605,8 @@ class DiffMatchPatch {
         typeof opt_c == 'undefined') {
       // Method 1: text1, text2
       // Compute diffs from text1 and text2.
-      text1 = /** @type {string} */(a);
-      diffs = this.diff_main(text1, /** @type {string} */(opt_b), true);
+      text1 = (a);
+      diffs = this.diff_main(text1, (opt_b), true);
       if (diffs.length > 2) {
         this.diff_cleanupSemantic(diffs);
         this.diff_cleanupEfficiency(diffs);
@@ -1615,19 +1615,19 @@ class DiffMatchPatch {
         typeof opt_c == 'undefined') {
       // Method 2: diffs
       // Compute text1 from diffs.
-      diffs = /** @type {!Array.<!diff_match_patch.Diff>} */(a);
+      diffs = (a);
       text1 = this.diff_text1(diffs);
     } else if (typeof a == 'string' && opt_b && typeof opt_b == 'object' &&
         typeof opt_c == 'undefined') {
       // Method 3: text1, diffs
-      text1 = /** @type {string} */(a);
-      diffs = /** @type {!Array.<!diff_match_patch.Diff>} */(opt_b);
+      text1 = (a);
+      diffs = (opt_b);
     } else if (typeof a == 'string' && typeof opt_b == 'string' &&
         opt_c && typeof opt_c == 'object') {
       // Method 4: text1, text2, diffs
       // text2 is not used.
-      text1 = /** @type {string} */(a);
-      diffs = /** @type {!Array.<!diff_match_patch.Diff>} */(opt_c);
+      text1 = (a);
+      diffs = (opt_c);
     } else {
       throw new Error('Unknown call format to patch_make.');
     }
@@ -1714,8 +1714,8 @@ class DiffMatchPatch {
 
   /**
    * Given an array of patches, return another array that is identical.
-   * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
-   * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
+   * @param  patches Array of Patch objects.
+   * @return  Array of Patch objects.
    */
     patch_deepCopy (patches: Array<patch_obj>): Array<patch_obj> {
     // Making deep copies is hard in JavaScript.
@@ -1740,9 +1740,9 @@ class DiffMatchPatch {
   /**
    * Merge a set of patches onto the text.  Return a patched text, as well
    * as a list of true/false values indicating which patches were applied.
-   * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
-   * @param {string} text Old text.
-   * @return {!Array.<string|!Array.<boolean>>} Two element Array, containing the
+   * @param  patches Array of Patch objects.
+   * @param  text Old text.
+   * @return  Two element Array, containing the
    *      new text and an array of boolean values.
    */
     patch_apply (patches: Array<patch_obj>, text: string) {
@@ -1848,8 +1848,8 @@ class DiffMatchPatch {
   /**
    * Add some padding on text start and end so that edges can match something.
    * Intended to be called only from within patch_apply.
-   * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
-   * @return {string} The padding string added to each side.
+   * @param  patches Array of Patch objects.
+   * @return  The padding string added to each side.
    */
     patch_addPadding (patches: Array<patch_obj>) {
     const paddingLength = this.Patch_Margin;
@@ -1908,7 +1908,7 @@ class DiffMatchPatch {
    * Look through the patches and break up any which are longer than the maximum
    * limit of the match algorithm.
    * Intended to be called only from within patch_apply.
-   * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
+   * @param  patches Array of Patch objects.
    */
     patch_splitMax = function(patches: Array<patch_obj>) {
     const patch_size = this.Match_MaxBits;
@@ -1999,8 +1999,8 @@ class DiffMatchPatch {
 
   /**
    * Take a list of patches and return a textual representation.
-   * @param {!Array.<!diff_match_patch.patch_obj>} patches Array of Patch objects.
-   * @return {string} Text representation of patches.
+   * @param  patches Array of Patch objects.
+   * @return  Text representation of patches.
    */
     patch_toText (patches: Array<patch_obj>) {
     const text = [];
@@ -2013,8 +2013,8 @@ class DiffMatchPatch {
 
   /**
    * Parse a textual representation of patches and return a list of Patch objects.
-   * @param {string} textline Text representation of patches.
-   * @return {!Array.<!diff_match_patch.patch_obj>} Array of Patch objects.
+   * @param  textline Text representation of patches.
+   * @return  Array of Patch objects.
    * @throws {!Error} If invalid input.
    */
     patch_fromText (textline: string): Array<patch_obj> {
@@ -2093,7 +2093,7 @@ class DiffMatchPatch {
 
 /**
  * Class representing one patch operation.
- * @constructor
+
  */
 export class patch_obj {
 
