@@ -6,8 +6,8 @@ import { Diff, DiffOp } from './diffMatchPatch';
   selector: '[semanticDiff]'
 })
 export class SemanticDiffDirective implements OnInit, OnChanges {
-  @Input() left: string | number | boolean;
-  @Input() right: string | number | boolean;
+  @Input() left: string | number | boolean = '';
+  @Input() right: string | number | boolean = '';
 
   public constructor(
     private el: ElementRef,
