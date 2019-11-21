@@ -114,9 +114,9 @@ type DiffCalculation = {
 })
 export class LineCompareComponent implements OnInit, OnChanges {
   @Input()
-  public left: string | number | boolean;
+  public left: string | number | boolean = '';
   @Input()
-  public right: string | number | boolean;
+  public right: string | number | boolean = '';
   // The number of lines of context to provide either side of a DiffOp.Insert or DiffOp.Delete diff.
   // Context is taken from a DiffOp.Equal section.
   @Input()
