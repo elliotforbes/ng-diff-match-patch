@@ -6,8 +6,8 @@ import { Diff, DiffOp } from './diffMatchPatch';
   selector: '[processingDiff]'
 })
 export class ProcessingDiffDirective implements OnInit, OnChanges {
-  @Input() left: string;
-  @Input() right: string;
+  @Input() left: string = '';
+  @Input() right: string = '';
 
   public constructor(
     private el: ElementRef,
