@@ -7,8 +7,8 @@ import { Diff, DiffOp } from './diffMatchPatch';
 })
 export class DiffDirective implements OnInit, OnChanges {
 
-  @Input() left: string;
-  @Input() right: string;
+  @Input() left: string = '';
+  @Input() right: string = '';
 
   public constructor(
     private el: ElementRef,
