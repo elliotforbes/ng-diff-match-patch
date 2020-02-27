@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build ng-diff-match-patch --prod",
+    "build": "rm -rf dist/ && ng build ng-diff-match-patch --prod",
     "publish": "npm run build && npm publish dist/ng-diff-match-patch",
     "test": "ng test ng-diff-match-patch --watch=false",
     "lint": "ng lint",
