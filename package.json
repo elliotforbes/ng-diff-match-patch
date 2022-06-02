@@ -33,7 +33,7 @@
   "homepage": "https://github.com/elliotforbes/ng-diff-match-patch#readme",
   "dependencies": {
     "@angular/common": "^6.0.3",
-    "@angular/core": "^6.0.3",
+    "@angular/core": "^11.0.5",
     "@angular/compiler": "^6.0.3",
     "@angular/animations": "^6.0.3",
     "@angular/forms": "^6.0.3",
